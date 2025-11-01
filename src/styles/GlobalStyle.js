@@ -2,6 +2,7 @@ import { createGlobalStyle } from "styled-components";
 
 const GlobalStyle = createGlobalStyle`
   * {
+    //border : 1px solid;
     box-sizing: border-box;
     margin: 0;
     padding: 0;
