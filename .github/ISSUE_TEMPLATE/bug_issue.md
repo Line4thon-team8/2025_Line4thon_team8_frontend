@@ -1,6 +1,6 @@
 ---
-name: Bug Report
-about: 버그를 제보합니다.
+name: Bug Issue
+about: 버그 수정
 title: "[Bug] "
 labels: bug
 assignees: ''
