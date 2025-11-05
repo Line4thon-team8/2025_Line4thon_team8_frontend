@@ -1,9 +1,12 @@
-// 디자인시스템 확인용 페이지입니다. 최종 때는 삭제 예정!
+// StoryBook
 
 import styled from "styled-components";
 import Button from "../components/Buttons/Button";
 import TopicButton from "../components/Buttons/TopicButton";
 import SaveButton from "../components/Buttons/SaveButton";
+import Input from "../components/Inputs/Input";
+import InputWithButton from "../components/Inputs/InputWithButton";
+import SignupModal from "../components/Modals/SignupModal";
 
 
 const DesignSystem = () => {
@@ -27,6 +30,22 @@ const DesignSystem = () => {
 
         <Component>Save Button</Component>
         <SaveButton>저장하기</SaveButton>
+
+        <Component>Input</Component>
+        <InputWithButton
+          type="email"
+          placeholder="이메일 주소"
+          buttonText="중복확인"
+          onButtonClick={() => alert("중복확인 클릭됨!")}
+        />
+        <Input
+          type="password"
+          placeholder="비밀번호"
+        />
+
+        <Component>Modal</Component>
+        
+
 
 
     </Container>
