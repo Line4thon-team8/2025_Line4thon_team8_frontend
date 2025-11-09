@@ -15,15 +15,17 @@ export default Button;
 //----------- Style ------------//
 
 const StyledButton = styled.button`
-  border-radius: 8px;
+  border-radius: 12px;
   font-weight: 600;
-  padding: 10px 18px;
+  padding: 15px 64px;
   transition: all 0.2s ease;
   cursor: pointer;
 
   // primary button
   ${({ variant }) => variant === "primary" && css`
-    background-color: #343a40;
+    width: 220px;
+    height: 52px;
+    background-color: #000;
     color: white;
     &:hover {
       background-color: #212529;
