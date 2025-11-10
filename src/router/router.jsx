@@ -8,7 +8,7 @@ import MainPage from "../pages/SessionPage/MainPage";
 import SelectTopicPage from "../pages/SessionPage/SelectTopicPage";
 import DesignSystem from "../pages/DesignSystem";
 import Progress from "../pages/Progress/Progress";
-// import Summation from "../pages/SummationPage/Summation";
+import Summation from "../pages/SummationPage/Summation";
 
 // Router
 export default function Router() {
@@ -21,7 +21,7 @@ export default function Router() {
           <Route path="/main" element={<MainPage />} />
           <Route path="/session" element={<SelectTopicPage/>} />
           <Route path="/progress" element={<Progress />} />
-          {/* <Route path="/summation" element={<Summation />} /> */}
+          <Route path="/summation" element={<Summation />} />
         </Route>
 
 
