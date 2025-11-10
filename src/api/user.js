@@ -43,3 +43,13 @@ export const checkEmail = async (email) => {
     throw err;
   }
 };
+
+export const loginUser = async (email, password) => {
+  try {
+    const res = await api.post("/api/user/login", { email, password });
+    return res.data; // 예: { message: "로그인 성공", id: 1 }
+  } catch (err) {
+    console.error("❌ 로그인 실패:", err.response);
+    throw err;
+  }
+};
