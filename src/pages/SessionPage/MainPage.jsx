@@ -2,8 +2,40 @@ import styled from "styled-components";
 import Button from "../../components/Buttons/Button";
 import Input from "../../components/Inputs/Input";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { analyzeChat } from "../../api/session";
 
-const MainPage = () => {
+  const MainPage = () => {
+    const [chatLink, setChatLink] = useState("");
+    const navigate = useNavigate();
+
+  const handleAnalyze = async () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) return alert("로그인 후 이용해주세요!");
+    if (!chatLink) return alert("대화 링크를 입력해주세요!");
+
+    try {
+      // 1️⃣ 링크 분석 요청
+      const { extract_id, content } = await analyzeChat(userId, chatLink);
+      console.log("링크 분석 결과:", extract_id, content);
+
+      // 2️⃣ 토픽 리스트로 변환
+      const topics = content.split("\n").map((line) => {
+        const [namePart, valuePart] = line.split("-");
+        return {
+          name: namePart?.replace(/^\d+\.\s*/, "").trim(),
+          value: parseFloat(valuePart) || 0,
+        };
+      });
+
+      // 3️⃣ 다음 페이지로 이동
+      navigate(`/select-topic?extractId=${extract_id}`, { state: { topics } });
+    } catch (err) {
+      console.error(err);
+      alert("링크 분석 중 오류가 발생했습니다.");
+    }
+  };
+
   return (
     <Container>
       <Title>분석할 대화 링크를 붙여넣어주세요</Title>
@@ -12,15 +44,22 @@ const MainPage = () => {
       </Description>
 
       <InputWrapper>
-        <Input placeholder="AI 대화 공유 링크를 붙여넣어주세요" />
+        <Input
+          placeholder="AI 대화 공유 링크를 붙여넣어주세요"
+          value={chatLink}
+          onChange={(e) => setChatLink(e.target.value)}
+        />
       </InputWrapper>
 
-      <Button variant="primary">분석하기</Button>
+      <Button variant="primary" onClick={handleAnalyze}>
+        확인
+      </Button>
     </Container>
   );
 };
 
 export default MainPage;
+
 
 // styled-components
 
