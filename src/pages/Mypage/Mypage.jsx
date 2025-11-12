@@ -73,7 +73,8 @@ const MyPage = () => {
         />
       </SectionRow>
 
-      <RecentReports />
+      <RecentReports userId={userId} />
+
     </Wrapper>
   );
 };
