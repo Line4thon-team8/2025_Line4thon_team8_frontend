@@ -1,81 +1,91 @@
 // 사용자 정보, 통계
-
+// src/components/ProfileCard.jsx
 import styled from "styled-components";
 
-const ProfileCard = () => {
+const ProfileCard = ({ user }) => {
   return (
     <Card>
-      <UserInfo>
+      <Left>
         <Avatar />
-        <InfoText>
-          <Name>사용자 닉네임</Name>
-          <StatBox>
-            <StatItem>
-              <StatValue>12</StatValue>
-              <StatLabel>총 리포트</StatLabel>
-            </StatItem>
-            <StatItem>
-              <StatValue>8</StatValue>
-              <StatLabel>활동 일수</StatLabel>
-            </StatItem>
-            <StatItem>
-              <StatValue>6</StatValue>
-              <StatLabel>학습 주제</StatLabel>
-            </StatItem>
-          </StatBox>
-        </InfoText>
-      </UserInfo>
-      <EditButton>프로필 수정</EditButton>
+        <Info>
+          <Nickname>{user?.nickname || "사용자 닉네임"}</Nickname>
+          <StatRow>
+            <StatBox>
+              <StatValue>{user?.totalSessionCount ?? 0}</StatValue>
+              <StatLabel>총 분석 세션</StatLabel>
+            </StatBox>
+            <StatBox>
+              <StatValue>{user?.reportCount ?? 0}</StatValue>
+              <StatLabel>생성된 리포트</StatLabel>
+            </StatBox>
+            <StatBox $highlight>
+              <StatValue>{user?.newConceptCount ?? 0}</StatValue>
+              <StatLabel>새로운 개념</StatLabel>
+            </StatBox>
+            <StatBox $highlight>
+              <StatValue>{user?.fixedConceptDiff ?? 0}</StatValue>
+              <StatLabel>바로 잡은 개념</StatLabel>
+            </StatBox>
+          </StatRow>
+        </Info>
+      </Left>
+      <EditBtn>프로필 수정</EditBtn>
     </Card>
   );
 };
 
 export default ProfileCard;
 
+// ---------- styled ---------- //
+
 const Card = styled.div`
   background-color: #fff;
   border-radius: 16px;
-  padding: 24px;
+  padding: 28px 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 `;
 
-const UserInfo = styled.div`
+const Left = styled.div`
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 24px;
 `;
 
 const Avatar = styled.div`
-  width: 64px;
-  height: 64px;
+  width: 80px;
+  height: 80px;
   background-color: #e9ecef;
   border-radius: 50%;
 `;
 
-const InfoText = styled.div`
+const Info = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 12px;
 `;
 
-const Name = styled.h2`
-  font-size: 1.3rem;
-  font-weight: 600;
+const Nickname = styled.h2`
+  font-size: 1.4rem;
+  font-weight: 700;
+`;
+
+const StatRow = styled.div`
+  display: flex;
+  gap: 16px;
 `;
 
 const StatBox = styled.div`
-  display: flex;
-  gap: 20px;
-`;
-
-const StatItem = styled.div`
+  background-color: ${({ $highlight }) => ($highlight ? "#d8f98b" : "#f8f9fa")};
+  border-radius: 10px;
+  padding: 12px 18px;
   text-align: center;
 `;
 
 const StatValue = styled.p`
-  font-weight: 700;
   font-size: 1.1rem;
+  font-weight: 700;
 `;
 
 const StatLabel = styled.p`
@@ -83,10 +93,10 @@ const StatLabel = styled.p`
   color: #666;
 `;
 
-const EditButton = styled.button`
+const EditBtn = styled.button`
   background: #000;
   color: #fff;
   border-radius: 8px;
-  padding: 8px 16px;
+  padding: 10px 18px;
   font-weight: 600;
 `;

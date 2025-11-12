@@ -1,34 +1,39 @@
-// 활동 캘린더 (square chart)
+// 활동 캘린더 (square chart)// src/components/ActivityCalendar.jsx
+
 import styled from "styled-components";
-import { useState } from "react";
 import dayjs from "dayjs";
+import { useState } from "react";
 
-const ActivityCalendar = ({ onDateSelect }) => {
-  const [currentMonth, setCurrentMonth] = useState(dayjs("2025-10-01")); // 기본 2025년 10월
+const ActivityCalendar = ({ onDateSelect, activityData = [] }) => {
+  const [currentMonth, setCurrentMonth] = useState(dayjs());
 
-  // 더미 데이터 (활동 강도)
-  const activityData = {
-    "2025-10-01": 3,
-    "2025-10-09": 4,
-    "2025-10-13": 2,
-    "2025-10-23": 1,
-  };
+  // 🟩 API 데이터 → { "YYYY-MM-DD": count } 형태로 변환
+  const dataMap = activityData.reduce((acc, item) => {
+    acc[item.reportDate] = item.count;
+    return acc;
+  }, {});
 
+  // 🗓️ 월별 날짜 계산
   const daysInMonth = currentMonth.daysInMonth();
-  const firstDayOfWeek = currentMonth.startOf("month").day(); // 0=일, 1=월...
-
-  // 앞쪽 공백칸 (이전달)
-  const emptyStart = Array(firstDayOfWeek).fill(null);
-  // 현재 달 날짜 배열
+  const firstDay = currentMonth.startOf("month").day(); // 일(0)~토(6)
+  const emptyStart = Array(firstDay).fill(null);
   const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-  // 전체 배열
   const calendarCells = [...emptyStart, ...daysArray];
 
-  // 날짜 선택 시 부모에 전달
+  // 📅 날짜 선택 시 부모로 전달
   const handleSelect = (day) => {
     if (!day) return;
     const dateStr = currentMonth.date(day).format("YYYY-MM-DD");
     onDateSelect(dateStr);
+  };
+
+  // 📈 색상 단계 계산 함수
+  const getLevelColor = (count) => {
+    if (count === 0) return "#f1f3f5";      // 없음
+    if (count >= 1 && count <= 5) return "#e3f7c4"; // 적음
+    if (count >= 6 && count <= 10) return "#d4f28b"; // 중간
+    if (count >= 11) return "#b6ed42";       // 많음
+    return "#f1f3f5"; // fallback
   };
 
   return (
@@ -49,12 +54,12 @@ const ActivityCalendar = ({ onDateSelect }) => {
           const dateStr = day
             ? currentMonth.date(day).format("YYYY-MM-DD")
             : null;
-          const level = activityData[dateStr] || 0;
+          const count = dataMap[dateStr] || 0;
 
           return (
             <DayCell
               key={idx}
-              $level={level}
+              $color={getLevelColor(count)}
               onClick={() => handleSelect(day)}
             >
               {day || ""}
@@ -65,10 +70,10 @@ const ActivityCalendar = ({ onDateSelect }) => {
 
       <Legend>
         <span>적음</span>
-        <ColorDot $level={1} />
-        <ColorDot $level={2} />
-        <ColorDot $level={3} />
-        <ColorDot $level={4} />
+        <ColorDot style={{ backgroundColor: "#f1f3f5" }} />
+        <ColorDot style={{ backgroundColor: "#e3f7c4" }} />
+        <ColorDot style={{ backgroundColor: "#d4f28b" }} />
+        <ColorDot style={{ backgroundColor: "#b6ed42" }} />
         <span>많음</span>
       </Legend>
     </Card>
@@ -125,26 +130,17 @@ const DayCell = styled.div`
   width: 42px;
   height: 42px;
   border-radius: 10px;
-  background-color: ${({ $level }) =>
-    $level === 0
-      ? "#f1f3f5"
-      : $level === 1
-      ? "#dee2e6"
-      : $level === 2
-      ? "#adb5bd"
-      : $level === 3
-      ? "#495057"
-      : "#000"};
+  background-color: ${({ $color }) => $color};
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 500;
-  cursor: ${({ $level }) => ($level ? "pointer" : "default")};
-  color: ${({ $level }) => ($level >= 3 ? "#fff" : "#000")};
-  transition: transform 0.2s ease, background 0.2s ease;
+  cursor: pointer;
+  color: #000;
+  transition: transform 0.2s ease;
 
   &:hover {
-    transform: ${({ $level }) => ($level ? "scale(1.1)" : "none")};
+    transform: scale(1.05);
   }
 `;
 
@@ -162,12 +158,4 @@ const ColorDot = styled.div`
   width: 20px;
   height: 20px;
   border-radius: 6px;
-  background-color: ${({ $level }) =>
-    $level === 1
-      ? "#dee2e6"
-      : $level === 2
-      ? "#adb5bd"
-      : $level === 3
-      ? "#495057"
-      : "#000"};
 `;
