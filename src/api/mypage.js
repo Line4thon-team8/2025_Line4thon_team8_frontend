@@ -40,3 +40,27 @@ export const getReportsByDate = async (userId, date) => {
     return [];
   }
 };
+
+// 폴더 목록 조회
+export const getUserFolders = async (userId) => {
+  try {
+    const res = await axios.get(`${API_BASE_URL}/report/folders`, {
+      params: { userId },
+    });
+    return res.data; // ex: [{ id: 1, name: "React 학습" }]
+  } catch (err) {
+    console.error("❌ 폴더 목록 조회 실패:", err);
+    return [];
+  }
+};
+
+// 폴더 내 리포트 목록 조회
+export const getReportsInFolder = async (folderId) => {
+  try {
+    const res = await axios.get(`${API_BASE_URL}/report/${folderId}/reports`);
+    return res.data; // ex: [{ reportId, title, createdAt }]
+  } catch (err) {
+    console.error(`❌ 폴더(${folderId}) 리포트 조회 실패:`, err);
+    return [];
+  }
+};
