@@ -3,33 +3,39 @@
 import styled from "styled-components";
 
 const RecentReports = () => {
-  const reports = [
-    { title: "React Hooks", date: "2025.11.05", id: 1 },
-    { title: "async/await", date: "2025.11.04", id: 2 },
-    { title: "이벤트 핸들링", date: "2025.11.03", id: 3 },
-  ];
-
   return (
     <Card>
       <Header>
-        <h3>최근 리포트</h3>
-        <SeeAll>전체보기</SeeAll>
+        <h3>저장된 리포트</h3>
+        <p>폴더 구조로 리포트를 관리합니다</p>
       </Header>
-      <List>
-        {reports.map((report) => (
-          <Item key={report.id}>
-            <Title>{report.title}</Title>
-            <Date>{report.date}</Date>
-          </Item>
-        ))}
-      </List>
+
+      <Folder>
+        <FolderName>📂 React 학습</FolderName>
+        <File>
+          <span>React Hooks 학습 리포트</span>
+          <Date>2025.10.30</Date>
+        </File>
+        <File>
+          <span>React 학습 리포트</span>
+          <Date>2025.10.27</Date>
+        </File>
+      </Folder>
+
+      <Folder>
+        <FolderName>📂 JavaScript 기초</FolderName>
+      </Folder>
+
+      <Folder>
+        <FolderName>📂 TypeScript</FolderName>
+      </Folder>
     </Card>
   );
 };
 
 export default RecentReports;
 
-// ---------- styled-components ---------- //
+// ---------- styled ---------- //
 
 const Card = styled.div`
   background-color: #fff;
@@ -38,54 +44,37 @@ const Card = styled.div`
 `;
 
 const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 16px;
-
   h3 {
-    font-size: 1rem;
     font-weight: 600;
+    font-size: 1rem;
+  }
+  p {
+    color: #868e96;
+    font-size: 0.85rem;
   }
 `;
 
-const SeeAll = styled.button`
-  background: none;
-  border: none;
-  color: #0d6efd;
+const Folder = styled.div`
+  margin-top: 8px;
+`;
+
+const FolderName = styled.p`
   font-weight: 600;
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
+  margin-bottom: 6px;
 `;
 
-const List = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`;
-
-const Item = styled.div`
+const File = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  background-color: #f8f9fa;
+  background: #f8f9fa;
+  padding: 10px 16px;
   border-radius: 8px;
-  transition: background 0.2s ease;
-
-  &:hover {
-    background-color: #e9ecef;
-  }
-`;
-
-const Title = styled.span`
-  font-weight: 500;
+  margin-left: 16px;
+  margin-bottom: 6px;
 `;
 
 const Date = styled.span`
-  font-size: 0.85rem;
   color: #868e96;
+  font-size: 0.85rem;
 `;
