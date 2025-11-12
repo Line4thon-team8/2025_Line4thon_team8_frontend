@@ -10,7 +10,7 @@ const GlobalStyle = createGlobalStyle`
 
   body {
     font-family: 'Noto Sans', sans-serif;
-    background-color: #fff;
+    background-color: #F4F4F5;
     color: #222;
     display: flex;
     justify-content: center; /* 가로 중앙 정렬 */
@@ -18,7 +18,7 @@ const GlobalStyle = createGlobalStyle`
 
   #root {
     width: 100%;
-    max-width: 1200px; /* 전체 페이지 최대 폭 */
+    max-width: 1440px; /* 전체 페이지 최대 폭 */
     padding: 0 20px;   /* 좌우 여백 */
   }
 

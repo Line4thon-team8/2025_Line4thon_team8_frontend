@@ -74,3 +74,11 @@ button:focus-visible {
   }
 }
 */
+
+/*폰트*/
+@font-face {
+  font-family: "Noto Sans";
+  src: url("./assets/fonts/NotoSansKR-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900; /* 가변 폰트라 가중치 범위 지정 */
+  font-style: normal;
+}
