@@ -13,7 +13,7 @@ const MyPage = () => {
   const [activityData, setActivityData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(dayjs().format("YYYY-MM-DD"));
   const [dailyReports, setDailyReports] = useState([]);
-  const userId = 3; // 로그인 후 교체
+  const userId = 1; // 로그인 후 교체
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,6 +63,7 @@ const MyPage = () => {
 
       <SectionRow>
         <ActivityCalendar
+          userId={userId}
           onDateSelect={setSelectedDate}
           activityData={activityData}
         />

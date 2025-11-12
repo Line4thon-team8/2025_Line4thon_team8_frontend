@@ -1,5 +1,5 @@
 // 사용자 정보, 통계
-// src/components/ProfileCard.jsx
+
 import styled from "styled-components";
 
 const ProfileCard = ({ user }) => {
@@ -23,7 +23,7 @@ const ProfileCard = ({ user }) => {
               <StatLabel>새로운 개념</StatLabel>
             </StatBox>
             <StatBox $highlight>
-              <StatValue>{user?.fixedConceptDiff ?? 0}</StatValue>
+              <StatValue>{user?.fixedConceptCount ?? 0}</StatValue>
               <StatLabel>바로 잡은 개념</StatLabel>
             </StatBox>
           </StatRow>
