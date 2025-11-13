@@ -64,13 +64,14 @@ const SignupModal = ({ onClose }) => {
             onChange={(e) => setEmail(e.target.value)}
             buttonText="중복확인"
             onButtonClick={async () => {
-              if (!email) return alert("이메일을 입력해주세요!");
+              if (!email) return alert("이메일을 입력해주세요");
               try {
                 const res = await checkEmail(email);
-                if (res.available === true || res.additionalProp1 === true) {
-                  alert("사용 가능한 이메일입니다 ✅");
+                // true/false 반대 예상
+                if (res.available === false || res.additionalProp1 === false) {
+                  alert("사용 가능한 이메일입니다");
                 } else {
-                  alert("이미 사용 중인 이메일입니다 ❌");
+                  alert("이미 사용 중인 이메일입니다");
                 }
               } catch (err) {
                 alert("서버 오류가 발생했습니다.");
@@ -98,10 +99,11 @@ const SignupModal = ({ onClose }) => {
               if (!nickname) return alert("닉네임을 입력해주세요!");
               try {
                 const res = await checkNickname(nickname);
-                if (res.available === true || res.additionalProp1 === true) {
-                  alert("사용 가능한 닉네임입니다 ✅");
+                // true/false 반대 예상
+                if (res.available === false || res.additionalProp1 === false) {
+                  alert("사용 가능한 닉네임입니다");
                 } else {
-                  alert("이미 사용 중인 닉네임입니다 ❌");
+                  alert("이미 사용 중인 닉네임입니다");
                 }
               } catch (err) {
                 alert("서버 오류가 발생했습니다.");

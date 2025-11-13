@@ -18,8 +18,9 @@ export default function Router() {
     <BrowserRouter>
       <Routes>
     
-        <Route path="/" element={<LandingPage />} />
+        
           <Route element={<Layout />}>
+            <Route path="/" element={<LandingPage />} />
             <Route path="/main" element={<MainPage />} />
             <Route path="/session" element={<SelectTopicPage/>} />
               <Route path="/progress" element={<Progress />} />

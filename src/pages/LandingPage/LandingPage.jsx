@@ -4,8 +4,9 @@ import { Link } from "react-router-dom";
 import Button from "../../components/Buttons/Button";
 import LoginModal from "../../components/Modals/LoginModal";
 import SignupModal from "../../components/Modals/SignupModal";
-//import useModal from "../../hooks/useModal";
 import { useState } from "react";
+import LandingBG from "../../assets/landing.svg";
+
 
 const LandingPage = () => {
 
@@ -14,6 +15,8 @@ const LandingPage = () => {
 
   return (
       <Container>
+
+        <BackgroundImage src={LandingBG} alt="landing-bg" />
         <Title>AI 대화를 나만의 학습 리포트로,<br/>대화의 기록이 곧 당신의 지식이 됩니다</Title>
         <Description>AI가 대화를 스스로 분류하고, 몰랐던 개념과 이해 과정을 시각화합니다<br/>기록할수록 학습의 패턴이 드러납니다</Description>
         
@@ -21,7 +24,7 @@ const LandingPage = () => {
           시작하기
         </Button>
         
-        <StyledLink to="/designsystem">Design System</StyledLink>
+        {/*<StyledLink to="/designsystem">Design System</StyledLink>*/}
 
         {activeModal === "login" && (
         <LoginModal
@@ -44,11 +47,23 @@ export default LandingPage;
 // styled-components
 
 const Container = styled.div`
+  position: relative;   /* ⭐ z-index 컨텍스트 생성 */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
+`;
+
+const BackgroundImage = styled.img`
+  position: absolute;
+  left: 0px;
+  top: 50%;
+  transform: translateY(-60%);
+  width: 550px;
+  opacity: 0.5;
+  z-index: 0;
+  pointer-events: none;   /* ⭐ 클릭 막힘 → 버튼 클릭 가능 */
 `;
 
 const Title = styled.h1`

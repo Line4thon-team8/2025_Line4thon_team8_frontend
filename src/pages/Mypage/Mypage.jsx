@@ -8,8 +8,12 @@ import DailySummary from "./components/DailySummary";
 import RecentReports from "./components/RecentReports";
 
 const MyPage = () => {
-  // ✅ 선택된 날짜 상태 관리 (캘린더 → 요약 공유)
-  const [selectedDate, setSelectedDate] = useState(null);
+
+  const [userData, setUserData] = useState(null);
+  const [activityData, setActivityData] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(dayjs().format("YYYY-MM-DD"));
+  const [dailyReports, setDailyReports] = useState([]);
+  const userId = 3; // 로그인 후 교체
 
   // ✅ 더미 리포트 데이터
   const reportDataList = {

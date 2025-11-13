@@ -18,6 +18,8 @@ export const registerUser = async (email, nickname, password) => {
   }
 };
 
+// 닉네임 중복 확인
+
 export const checkNickname = async (nickname) => {
   try {
     const res = await api.get(`/api/user/check-nickname`, {
@@ -31,6 +33,8 @@ export const checkNickname = async (nickname) => {
   }
 };
 
+// 이메일 중복 확인
+
 export const checkEmail = async (email) => {
   try {
     const res = await api.get(`/api/user/check-email`, {
@@ -43,6 +47,9 @@ export const checkEmail = async (email) => {
     throw err;
   }
 };
+
+
+// 로그인
 
 export const loginUser = async (email, password) => {
   try {
