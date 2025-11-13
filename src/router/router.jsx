@@ -11,19 +11,24 @@ import MyPage from "../pages/Mypage/Mypage";
 import DesignSystem from "../pages/DesignSystem";
 import Progress from "../pages/Progress/Progress";
 import Summation from "../pages/SummationPage/Summation";
+import Report from "../pages/ReportPage/Report";
+import LearningReportPage from "../pages/ReportPage/LearningReportPage";
 
 // Router
 export default function Router() {
   return (
     <BrowserRouter>
+
       <Routes>
     
         <Route path="/" element={<LandingPage />} />
           <Route element={<Layout />}>
             <Route path="/main" element={<MainPage />} />
-            <Route path="/select-topic" element={<SelectTopicPage/>} />
-              <Route path="/progress" element={<Progress />} />
+            <Route path="/session" element={<SelectTopicPage/>} />
+            <Route path="/progress" element={<Progress />} />
             <Route path="/summation" element={<Summation />} />
+            <Route path="/report" element={<Report />} />
+            <Route path="/report/:title" element={<LearningReportPage/>} />
             <Route path="/mypage" element={<MyPage />} />
           </Route>
 
