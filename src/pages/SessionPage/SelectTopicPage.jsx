@@ -1,98 +1,82 @@
-import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import Button from "../../components/Buttons/Button";
 import SegmentedControl from "../../components/Buttons/SegmentedControl";
+import { useState } from "react";
+import { startSession } from "../../api/session";
 
 const SelectTopicPage = () => {
-  const [activeIndex, setActiveIndex] = useState(null);
+  const location = useLocation();
+  const { topics } = location.state || { topics: [] };
+  const [mode, setMode] = useState("특정주제");
+  const [selectedTopic, setSelectedTopic] = useState(null);
+  const COLORS = ["#A5B4FC", "#818CF8", "#6366F1", "#4F46E5"];
 
-  const data = [
-    { name: "React Hooks", value: 40 },
-    { name: "async/await", value: 30 },
-    { name: "이벤트 핸들링", value: 20 },
-    { name: "상태 관리", value: 10 },
-  ];
+  const handleCreateSession = async () => {
+    const userId = localStorage.getItem("userId");
+    const extractId = new URLSearchParams(location.search).get("extractId");
+    if (!userId) return alert("로그인 후 이용해주세요!");
 
-  const COLORS = ["#3B82F6", "#60A5FA", "#93C5FD", "#BFDBFE"];
+    const topic =
+      mode === "전체통합"
+        ? topics.map((t) => t.name).join(",")
+        : selectedTopic || "";
 
-  const onPieEnter = (_, index) => setActiveIndex(index);
-  const onPieLeave = () => setActiveIndex(null);
-
-  const handleClick = (topic) => {
-    console.log("선택된 주제:", topic);
-    // navigate("/progress", { state: { selectedTopic: topic } });
-  };
-
-  const handleModeChange = (mode) => {
-    console.log("선택된 모드:", mode);
+    try {
+      const res = await startSession(userId, extractId, mode, topic);
+      alert(`세션 생성 완료! ID: ${res.entranceId}`);
+    } catch (err) {
+      console.error(err);
+      alert("세션 생성 중 오류가 발생했습니다.");
+    }
   };
 
   return (
     <Container>
       <Title>분석할 내용을 선택하세요</Title>
-      <Description>
-        AI가 대화 내용을 분석해 학습 리포트를 준비합니다.
-      </Description>
+      <Description>AI가 대화 내용을 분석해 학습 리포트를 준비합니다.</Description>
 
       <SegmentedControl
-        options={["전체 주제 분석", "특정 주제 분석"]}
-        onChange={handleModeChange}
+        options={["전체통합", "특정주제"]}
+        onChange={setMode}
       />
 
-      
-
-      <Div>
       <ChartWrapper>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
-              data={data}
+              data={topics}
               dataKey="value"
               nameKey="name"
               innerRadius={80}
               outerRadius={120}
-              onMouseEnter={onPieEnter}
-              onMouseLeave={onPieLeave}
-              onClick={(entry) => handleClick(entry.name)}
-              paddingAngle={2}
+              onClick={(entry) => setSelectedTopic(entry.name)}
             >
-              {data.map((entry, index) => (
+              {topics.map((entry, index) => (
                 <Cell
-                  key={`cell-${index}`}
+                  key={index}
                   fill={COLORS[index % COLORS.length]}
                   stroke="#fff"
-                  strokeWidth={activeIndex === index ? 4 : 2}
-                  style={{
-                    cursor: "pointer",
-                    filter:
-                      activeIndex === index
-                        ? "drop-shadow(0 0 8px rgba(59,130,246,0.7))"
-                        : "none",
-                    transition: "all 0.2s ease",
-                  }}
                 />
               ))}
             </Pie>
-            <Tooltip
-              formatter={(value, name) => [`${value}%`, name]}
-              contentStyle={{
-                backgroundColor: "#fff",
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-              }}
-            />
+            <Tooltip formatter={(v, n) => [`${v}%`, n]} />
           </PieChart>
         </ResponsiveContainer>
       </ChartWrapper>
 
-      <Button variant="primary">세션 생성하기</Button>
-      </Div>
+      <Button variant="primary" onClick={handleCreateSession}>
+        세션 생성하기
+      </Button>
     </Container>
   );
 };
 
 export default SelectTopicPage;
+
+
+
 
 // ---------------- Styled Components ---------------- //
 

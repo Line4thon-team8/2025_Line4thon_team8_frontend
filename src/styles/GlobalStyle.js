@@ -19,7 +19,7 @@ const GlobalStyle = createGlobalStyle`
   #root {
     width: 100%;
     max-width: 1440px; /* 전체 페이지 최대 폭 */
-    padding: 0 20px;   /* 좌우 여백 */
+    padding: 0 0;   /* 좌우 여백 */
   }
 
   a {

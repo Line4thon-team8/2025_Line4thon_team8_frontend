@@ -4,6 +4,8 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
 });
 
+// 회원가입
+
 export const registerUser = async (email, nickname, password) => {
   try {
     const res = await api.post("/api/user", {
@@ -54,7 +56,12 @@ export const checkEmail = async (email) => {
 export const loginUser = async (email, password) => {
   try {
     const res = await api.post("/api/user/login", { email, password });
-    return res.data; // 예: { message: "로그인 성공", id: 1 }
+    const user = res.data;
+
+    // 로그인 성공 시 userId 저장
+    localStorage.setItem("userId", user.id);
+
+    return user; // 예: { message: "로그인 성공", id: 1 }
   } catch (err) {
     console.error("❌ 로그인 실패:", err.response);
     throw err;
