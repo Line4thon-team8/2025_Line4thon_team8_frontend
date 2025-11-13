@@ -1,30 +1,62 @@
+import { useState } from "react";
 import styled from "styled-components";
 import Input from "../Inputs/Input";
 import Button from "../Buttons/Button";
 import { X } from "lucide-react";
+import { loginUser } from "../../api/user"; // ✅ user.js 함수 불러오기
+import { useNavigate } from "react-router-dom";
 
 const LoginModal = ({ onClose, onSignupClick }) => {
-  // 배경 클릭 시 닫힘 처리
-  const handleBackgroundClick = (e) => {
-    if (e.target === e.currentTarget) onClose();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+
+  const navigate = useNavigate();
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setMessage("이메일과 비밀번호를 입력해주세요.");
+      return;
+    }
+
+    try {
+      const res = await loginUser(email, password);
+      alert(`로그인 성공! 사용자 ID: ${res.id}`);
+      navigate("/main");
+      setMessage("로그인 성공!");
+      onClose();
+    } catch (err) {
+      if (err.response?.status === 400)
+        setMessage("이메일 또는 비밀번호가 일치하지 않습니다.");
+      else setMessage("서버 오류가 발생했습니다.");
+    }
   };
 
   return (
-    <Overlay onClick={handleBackgroundClick}>
+    <Overlay>
       <ModalBox>
         <CloseButton onClick={onClose}>
           <X size={20} />
         </CloseButton>
-
         <Title>로그인</Title>
-        <SubText>학습 기록을 저장하려면 로그인이 필요합니다.</SubText>
-
         <InputGroup>
-          <Input type="email" placeholder="이메일 주소" />
-          <Input type="password" placeholder="비밀번호" />
+          <Input
+            type="email"
+            placeholder="이메일 주소"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Input
+            type="password"
+            placeholder="비밀번호"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </InputGroup>
-
-        <Button variant="primary">계속</Button>
+        <Button variant="primary" onClick={handleLogin}>
+          계속
+        </Button>
+        {message && <p style={{ marginTop: "16px" }}>{message}</p>}
 
         <Footer>
           <span>아직 계정이 없으신가요?</span>
@@ -36,6 +68,7 @@ const LoginModal = ({ onClose, onSignupClick }) => {
 };
 
 export default LoginModal;
+
 
 // ---------- styled-components ---------- //
 
@@ -70,7 +103,6 @@ const CloseButton = styled.button`
   padding: 4px;
   color: #555;
   transition: 0.2s;
-
   &:hover {
     color: #000;
   }

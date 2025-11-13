@@ -1,41 +1,71 @@
-// 활동 캘린더 (square chart)
 import styled from "styled-components";
-import { useState } from "react";
 import dayjs from "dayjs";
+import { useState, useEffect } from "react";
+import { getUserActivity } from "../../../api/mypage"; // ✅ 추가
 
-const ActivityCalendar = ({ onDateSelect }) => {
-  const [currentMonth, setCurrentMonth] = useState(dayjs("2025-10-01")); // 기본 2025년 10월
+const ActivityCalendar = ({ onDateSelect, userId }) => {
+  const [currentMonth, setCurrentMonth] = useState(dayjs());
+  const [activityData, setActivityData] = useState([]);
 
-  // 더미 데이터 (활동 강도)
-  const activityData = {
-    "2025-10-01": 3,
-    "2025-10-09": 4,
-    "2025-10-13": 2,
-    "2025-10-23": 1,
-  };
+  // ✅ 1️⃣ 현재 월 기준으로 활동 데이터 불러오기
+  useEffect(() => {
+    const fetchActivity = async () => {
+      try {
+        // yyyy-MM 형식으로 현재 월 전달 (백엔드에서 이걸 처리할 수도 있음)
+        const res = await getUserActivity(userId);
+        setActivityData(res || []);
+      } catch (err) {
+        console.error("❌ 활동 데이터 불러오기 실패:", err);
+        setActivityData([]);
+      }
+    };
 
+    fetchActivity();
+  }, [currentMonth]); // 🔸 달 변경될 때마다 다시 불러옴
+
+  // ✅ 2️⃣ API 데이터를 { "YYYY-MM-DD": count } 형태로 변환
+  const dataMap = activityData.reduce((acc, item) => {
+    const key = item.date || item.reportDate; // ✅ 둘 다 대응
+    acc[key] = item.count;
+    return acc;
+  }, {});
+
+  // ✅ 3️⃣ 현재 월의 날짜 계산
   const daysInMonth = currentMonth.daysInMonth();
-  const firstDayOfWeek = currentMonth.startOf("month").day(); // 0=일, 1=월...
-
-  // 앞쪽 공백칸 (이전달)
-  const emptyStart = Array(firstDayOfWeek).fill(null);
-  // 현재 달 날짜 배열
+  const firstDay = currentMonth.startOf("month").day();
+  const emptyStart = Array(firstDay).fill(null);
   const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-  // 전체 배열
   const calendarCells = [...emptyStart, ...daysArray];
 
-  // 날짜 선택 시 부모에 전달
+  // ✅ 4️⃣ 날짜 클릭 시 부모로 전달
   const handleSelect = (day) => {
     if (!day) return;
     const dateStr = currentMonth.date(day).format("YYYY-MM-DD");
     onDateSelect(dateStr);
   };
 
+  // ✅ 5️⃣ 색상 단계 계산 함수
+  const getLevelColor = (count) => {
+    if (!count || count === 0) return "#f1f3f5"; // 없음
+    if (count >= 1 && count < 5) return "#e3f7c4"; // 적음
+    if (count >= 5 && count < 10) return "#d4f28b"; // 중간
+    if (count >= 10) return "#b6ed42"; // 많음
+    return "#f1f3f5";
+  };
+
+  // ✅ 6️⃣ 이전/다음 달 이동
+  const handlePrevMonth = () => setCurrentMonth(currentMonth.subtract(1, "month"));
+  const handleNextMonth = () => setCurrentMonth(currentMonth.add(1, "month"));
+
   return (
     <Card>
       <Header>
         <Title>활동 캘린더</Title>
-        <MonthText>{currentMonth.format("YYYY년 M월")}</MonthText>
+        <MonthNav>
+          <NavButton onClick={handlePrevMonth}>◀</NavButton>
+          <MonthText>{currentMonth.format("YYYY년 M월")}</MonthText>
+          <NavButton onClick={handleNextMonth}>▶</NavButton>
+        </MonthNav>
       </Header>
 
       <Weekdays>
@@ -49,12 +79,12 @@ const ActivityCalendar = ({ onDateSelect }) => {
           const dateStr = day
             ? currentMonth.date(day).format("YYYY-MM-DD")
             : null;
-          const level = activityData[dateStr] || 0;
+          const count = dataMap[dateStr] || 0;
 
           return (
             <DayCell
               key={idx}
-              $level={level}
+              $color={getLevelColor(count)}
               onClick={() => handleSelect(day)}
             >
               {day || ""}
@@ -65,10 +95,10 @@ const ActivityCalendar = ({ onDateSelect }) => {
 
       <Legend>
         <span>적음</span>
-        <ColorDot $level={1} />
-        <ColorDot $level={2} />
-        <ColorDot $level={3} />
-        <ColorDot $level={4} />
+        <ColorDot style={{ backgroundColor: "#f1f3f5" }} />
+        <ColorDot style={{ backgroundColor: "#e3f7c4" }} />
+        <ColorDot style={{ backgroundColor: "#d4f28b" }} />
+        <ColorDot style={{ backgroundColor: "#b6ed42" }} />
         <span>많음</span>
       </Legend>
     </Card>
@@ -77,7 +107,7 @@ const ActivityCalendar = ({ onDateSelect }) => {
 
 export default ActivityCalendar;
 
-// ---------- styled-components ---------- //
+// ---------- styled ---------- //
 
 const Card = styled.div`
   background-color: #fff;
@@ -98,9 +128,28 @@ const Title = styled.h3`
   font-weight: 600;
 `;
 
+const MonthNav = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const NavButton = styled.button`
+  border: none;
+  background: transparent;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #868e96;
+  &:hover {
+    color: #212529;
+  }
+`;
+
 const MonthText = styled.span`
   font-size: 0.95rem;
-  color: #868e96;
+  color: #495057;
+  min-width: 110px;
+  text-align: center;
 `;
 
 const Weekdays = styled.div`
@@ -125,26 +174,16 @@ const DayCell = styled.div`
   width: 42px;
   height: 42px;
   border-radius: 10px;
-  background-color: ${({ $level }) =>
-    $level === 0
-      ? "#f1f3f5"
-      : $level === 1
-      ? "#dee2e6"
-      : $level === 2
-      ? "#adb5bd"
-      : $level === 3
-      ? "#495057"
-      : "#000"};
+  background-color: ${({ $color }) => $color};
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 500;
-  cursor: ${({ $level }) => ($level ? "pointer" : "default")};
-  color: ${({ $level }) => ($level >= 3 ? "#fff" : "#000")};
-  transition: transform 0.2s ease, background 0.2s ease;
-
+  cursor: pointer;
+  color: #000;
+  transition: transform 0.2s ease;
   &:hover {
-    transform: ${({ $level }) => ($level ? "scale(1.1)" : "none")};
+    transform: scale(1.05);
   }
 `;
 
@@ -162,12 +201,4 @@ const ColorDot = styled.div`
   width: 20px;
   height: 20px;
   border-radius: 6px;
-  background-color: ${({ $level }) =>
-    $level === 1
-      ? "#dee2e6"
-      : $level === 2
-      ? "#adb5bd"
-      : $level === 3
-      ? "#495057"
-      : "#000"};
 `;
