@@ -61,34 +61,34 @@ const ToggleWrap = styled.div`
 
 const Switch = styled.button`
   position: relative;
-  width: 332px;
-  height: 56px;
+  width: 17.29vw;   /* 332px */
+  height: 5.19vh;   /* 56px */
   padding: 0;
   border: 0;
   background: transparent;
   cursor: pointer;
-  border-radius: 100px;
+  border-radius: 9.26vh; /* 100px */
   outline: none;
 `;
 
 const Track = styled.div`
   position: absolute;
   inset: 0;
-  border-radius: 100px;
+  border-radius: 9.26vh; /* 100px */
   background-color: #fff;
 `;
 
 const Knob = styled.div`
   position: absolute;
   z-index: 1;
-  width: 161px;
-  height: 46px;
-  left: 5px;
-  bottom: 5px;
-  border-radius: 100px;
+  width: 8.39vw;    /* 161px */
+  height: 4.26vh;   /* 46px */
+  left: 0.26vw;     /* 5px */
+  bottom: 0.46vh;   /* 5px */
+  border-radius: 9.26vh; /* 100px */
   background: rgba(0, 0, 0, 0.8);
   transition: transform 0.6s;
-  transform: translateX(${(p) => (p.$on ? 160 : 0)}px);
+  transform: translateX(${(p) => (p.$on ? "8.33vw" : "0")});  /* 160px */
 `;
 
 const LabelIn = styled.span`
@@ -98,7 +98,7 @@ const LabelIn = styled.span`
   transform: translateY(-50%);
   width: 50%;
   text-align: center;
-  font-size: 16px;
+  font-size: 1.48vh;    /* 16px */
   font-weight: 700;
   pointer-events: none;
 

@@ -25,20 +25,21 @@ const SaveOut = ({outtitle}) => {
 
 export default SaveOut;
 
+
 const SaveOutWrap = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 17px;
+    gap: 1.57vh;   /* 17px */
 `;
 
 const OutWrap = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 9px;
+    gap: 0.83vh;   /* 9px */
 `;
 
 const OutTitle = styled.div`
     font-family: "Noto Sans", Medium;
     font-weight: 500;
-    font-size: 20px;
+    font-size: 1.85vh;   /* 20px */
 `;

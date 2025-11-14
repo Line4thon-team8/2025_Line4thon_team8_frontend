@@ -1,6 +1,7 @@
 import styled, { css } from "styled-components";
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 import { createReport } from "../../api/report";
 import { analyze } from "../../api/analyze";
@@ -14,13 +15,35 @@ import AllReportCard from "../../components/Report/AllReportCard";
 import SaveIn from "../../components/Report/SaveIn";
 import SaveOut from "../../components/Report/SaveOut";
 import SaveButton from "../../components/Buttons/Button";
-import OutReportModal from "../../components/Report/OutReportModal";
+import reportBack from "../../assets/reportBack.svg";
 
 const Report = () => {
     const [isIntegrated, setIsIntegrated] = useState(false); //false=주제별, true=통합
-    const [showAlert, setShowAlert] = useState(false);
     const [allTitle, setAllTitle] = useState("");
     const [page, setPage] = useState(0);
+
+    useEffect(() => {
+        // 페이지 들어왔을 때 body 배경 변경
+        document.body.style.background ="linear-gradient(#f2f2f2, #DBF596)";
+        document.body.style.minHeight = "100vh";
+        document.body.style.margin = 0;
+
+        // 페이지 떠날 때 원래대로 복원
+        return () => {
+            document.body.style.background = "";
+            document.body.style.minHeight = "";
+        };
+        }, []);
+
+        const handleSaveButtonClick = () => {
+            const ok = window.confirm(
+                "학습 세션이 종료됩니다. 확인을 누르면 홈 화면으로 돌아갑니다."
+            );
+
+            if (ok) {
+                navigate("/main");
+            }
+            };
  
     const navigate = useNavigate();
     const location = useLocation();
@@ -128,6 +151,7 @@ const Report = () => {
 
     return (
         <R_BackColor>
+            {/* <BackgroundImage src={reportBack} alt="main-bg" /> */}
             <ReportWrap>
                 <ReportTitle>학습 리포트</ReportTitle>
                 <ReportSub>주제별 리포트를 자동 생성하거나, 통합 리포트를 한 번에 내보내세요.</ReportSub>
@@ -183,16 +207,10 @@ const Report = () => {
                     </R_DetailWrap>
                 </ReportSaveWrap>
 
-                <StyledSaveButton onClick={handleConfirm}>확인</StyledSaveButton>
+                <StyledSaveButton onClick={handleSaveButtonClick}>확인</StyledSaveButton>
             </ReportWrap>
-            {showAlert&& (
-                <OutReportModal
-                    onConfirm={handleAlertConfirm}
-                    onClose={()=> setShowAlert(false)}
-                />
-            )}
         </R_BackColor>
-    )
+    );
 }
 
 export default Report;
