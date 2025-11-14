@@ -58,12 +58,13 @@ export const loginUser = async (email, password) => {
     const res = await api.post("/api/user/login", { email, password });
     const user = res.data;
 
-    // 로그인 성공 시 userId 저장
+    // 로그인 성공 시 userId, email 저장
     localStorage.setItem("userId", user.id);
+    localStorage.setItem("userEmail", email);
 
     return user; // 예: { message: "로그인 성공", id: 1 }
   } catch (err) {
-    console.error("❌ 로그인 실패:", err.response);
+    console.error("로그인 실패:", err.response?.data || err.message);
     throw err;
   }
 };

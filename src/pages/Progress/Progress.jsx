@@ -8,11 +8,17 @@ import { connectEntranceProgress } from "../../api/progress";
 
 const Progress = () => {
   const location = useLocation();
-  const { entranceId, topics = [] } = location.state || {};
+  const { entranceId: stateId, topics = [] } = location.state || {};
+
+  // 🔥 쿼리스트링에서도 entranceId 가져오기 (state가 없을 때 대비)
+  const queryId = new URLSearchParams(location.search).get("entranceId");
+
+  // 최종 entranceId = state 우선, 없으면 query
+  const finalEntranceId = stateId || queryId;
 
   const [topicProgress, setTopicProgress] = useState({});
 
-  // topics / topicProgress 기반으로 화면에 쓸 mockData 생성
+  // 화면 표시용 데이터 만들기
   const mockData = useMemo(() => {
     if (topics.length === 0) return [];
 
@@ -21,6 +27,7 @@ const Progress = () => {
         completed: 0,
         progtext: "분석 대기 중",
       };
+
       return {
         progName: t,
         completed: info.completed,
@@ -31,40 +38,52 @@ const Progress = () => {
 
   // SSE 연결
   useEffect(() => {
-    if (!entranceId) return;
+    if (!finalEntranceId) {
+      console.warn("❌ entranceId 없음 → SSE 연결 안 함");
+      return;
+    }
+
+    console.log("🔗 SSE Connecting with entranceId =", finalEntranceId);
 
     const stop = connectEntranceProgress({
-      entranceId,
+      entranceId: finalEntranceId,
+
       onEvent: (type, data) => {
-        const { topic, progress, step } = data;
-        if (!topic) return;
+        console.log("🔥 SSE EVENT:", type, data);
 
+        const { progress, step } = data;
+
+        // 서버가 topic:"전체"만 보내므로 → 모든 주제에 동일 적용
         setTopicProgress((prev) => {
-          const prevInfo = prev[topic] || {
-            completed: 0,
-            progtext: "분석 대기 중",
-          };
+          let newState = { ...prev };
 
-          let progtext = prevInfo.progtext;
-          if (type === "start") progtext = `${step} 시작...`;
-          else if (type === "done") progtext = `${step} 완료`;
-          else if (type === "update") progtext = `${step} 진행 중...`;
-          else if (type === "complete") progtext = "분석 완료";
+          topics.forEach((topicName) => {
+            const prevInfo = prev[topicName] || {
+              completed: 0,
+              progtext: "분석 대기 중",
+            };
 
-          return {
-            ...prev,
-            [topic]: {
+            let progtext = prevInfo.progtext;
+            if (type === "start") progtext = `${step} 시작...`;
+            else if (type === "done") progtext = `${step} 완료`;
+            else if (type === "update") progtext = `${step} 진행 중...`;
+            else if (type === "complete") progtext = "분석 완료";
+
+            newState[topicName] = {
               completed: progress ?? prevInfo.completed,
               progtext,
-            },
-          };
+            };
+          });
+
+          return newState;
         });
       },
     });
 
     return () => stop();
-  }, [entranceId]);
+  }, [finalEntranceId, topics]);
 
+  // 전체 평균
   const totalCompleted =
     mockData.length === 0
       ? 0
@@ -80,14 +99,13 @@ const Progress = () => {
     <Container>
       <Title>전체 진행 상황</Title>
 
-      {/*total 진행률*/}
       <ProgressWrap>
         <TotalProgWrap>
           <TotalPer>
             <ProgSubTitle>진행률</ProgSubTitle>
             <TotalCompleted>{totalCompleted}%</TotalCompleted>
           </TotalPer>
-          {/*totalCompleted = mockData 평균값*/}
+
           <ProgBar
             completed={totalCompleted}
             showPer={false}
@@ -96,8 +114,6 @@ const Progress = () => {
           />
         </TotalProgWrap>
 
-        {/*상세 진행률*/}
-        {/* mockData.map()으로 반복 렌더링*/}
         <SubProgWrap>
           {mockData.map((item) => (
             <ProgItem key={item.progName}>
@@ -111,7 +127,7 @@ const Progress = () => {
                   <ProgText>{item.progtext}</ProgText>
                 </Detailtxt>
               </LoaderWrap>
-              <ProgBar completed={item.completed} progcheck={item.progcheck} />
+              <ProgBar completed={item.completed} />
             </ProgItem>
           ))}
         </SubProgWrap>
@@ -122,7 +138,7 @@ const Progress = () => {
 
 export default Progress;
 
-/* ===== styled-components (그대로) ===== */
+/* ===== styled-components ===== */
 
 const Container = styled.div`
   height: 100%;
@@ -155,7 +171,7 @@ const TotalCompleted = styled.div`
   font-style: "Noto Sans", SemiBold;
   font-weight: 600;
   font-size: 40px;
-  color: #226cff;
+  color: #000000;
   margin-bottom: 13px;
 `;
 
@@ -196,7 +212,7 @@ const DetailCompleted = styled.div`
   font-style: "Roboto", Medium;
   font-weight: 500;
   font-size: 24px;
-  color: #226cff;
+  color: #000000;
   margin-left: auto;
 `;
 
@@ -222,12 +238,11 @@ const SubProgWrap = styled.div`
 
 const StatusWrap = styled.div`
   display: flex;
-  flex-direction: center;
   align-items: center;
 `;
 
 const CheckImg = styled.img`
-  background-color: #226cff;
+  background-color: #000000;
   padding: 17px 16px;
   border-radius: 20px;
   width: 90px;
