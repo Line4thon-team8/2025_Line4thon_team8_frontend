@@ -210,95 +210,75 @@ const Report = () => {
                 <StyledSaveButton onClick={handleSaveButtonClick}>확인</StyledSaveButton>
             </ReportWrap>
         </R_BackColor>
-    )
+    );
 }
 
 export default Report;
 
-const BackgroundImage = styled.img`
-  position: absolute;
-  right: 0;
-  top: 28%;
-  z-index: 0;
-  pointer-events: none;
-
-  width: 48.82vw;
-  height: 48.82vh;
-`;
-
 const StyledReportWrap = css`
-    margin-top: 10.27vh;        /* 111px */
+    margin-top: 111px;
     display: flex;
     align-items: center;
-    width: 59.06vw;             /* 1134px */
-    height: 29.62vh;            /* 320px */
-    border-radius: 1.85vh;      /* 20px */
+    width: 1134px;
+    height: 320px;
+    border-radius: 20px;
 
-    box-shadow: 0px 0.37vh 0.37vh rgba(0, 0, 0, 0.25);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 
     background-color: #D9F58A;
-`;
+`
 
 const R_BackColor = styled.div`
+    background: linear-gradient(#f2f2f2, #DBF596);
     min-height: 100vh;
-    padding-bottom: 0.37vh;   /* 4px */
-
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
-    z-iindex: -2;
-`;
+    padding-bottom: 4px;
+`
 
 const ReportWrap = styled.div`
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    margin-bottom: 3.79vh;    /* 41px */
+    margin-left: 150px;
+    margin-bottom: 41px;
 `;
 
 const ReportTitle = styled.div`
     font-family: "Noto Sans", Bold;
     font-weight: 700;
-    font-size: 5.93vh;        /* 64px */
+    font-size: 64px;
 `;
 
 const ReportSub = styled.div`
     font-family: "Noto Sans", Medium;
-    font-size: 1.85vh;       /* 20px */
+    font-size: 20px;
     font-weight: 500;
     color: #868686;
-    margin-bottom: 4.72vh;   /* 51px */
+
+    margin-bottom: 51px;
 `;
 
 const AllReportDetailWrap = styled.div`
     ${StyledReportWrap};
-    padding: 6.20vh 7.81vw 5vh 6.41vw; 
-    /* 67px 150px 54px 123px */
-`;
-
+    padding: 67px 150px 54px 123px;
+`
 const ReportDetailWrap = styled.div`
     ${StyledReportWrap};
-    padding: 6.20vh 1.51vw 5vh 1.45vw; 
-    /* 67px 29px 54px 28px */
+    padding: 67px 29px 54px 28px;
 
     display: flex;
     justify-content: space-between;
     align-items: center;
 
     >img {
-        width: 0.83vw;    /* 16px */
-        height: 0.83vw;   /* 16px */
+        width: 16px;
+        height: 16px;
     }
-
-    z-index: 1;
-`;
-
+`
 const LearningReportContain = styled.div`
     display: flex;
-    gap: 2.29vw;                 /* 44px */
-    margin: auto 2.81vw auto 1.09vw; 
+    gap: 44px;
+    margin: auto 54px auto 21px;
 `;
-
 const ReportBack = styled.div`
     
 `
@@ -308,44 +288,44 @@ const ReportBackWrap = styled.div`
 `;
 
 const ReportSaveWrap = styled.div`
-    margin-top: 27.5vh;          /* 297px */
+    margin-top: 297px;
 `;
+
 
 
 const R_DetailWrap = styled.div`
-    margin-top: 14.35vh;         /* 155px */
+    margin-top: 155px;
     display: flex;
-    gap: 2.55vw;                 /* 49px */
+    gap: 49px;
 `;
 
 const SavedWrap = styled.div`
-    padding: 3.89vh 2.24vw;     /* 42px 43px */
+    padding: 42px 43px;
     display: flex;
     flex-direction: column;
     background-color: #E6E6E8;
 
-    gap: 1.57vh;               /* 17px */
+    gap: 17px;
 
-    width: 27.14vw;            /* 521px */
-    min-height: 35.55vh;       /* 384px */
+    width: 521px;
+    min-height: 384px;
 
-    border-radius: 1.85vh;     /* 20px */
-    box-shadow: 0px 0.37vh 0.37vh rgba(0, 0, 0, 0.25);
+    border-radius: 20px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 `;
 
 const SavedTitle = styled.div`
     font-family: "Noto Sans", SemiBold;
-    font-size: 2.96vh;        /* 32px */
+    font-size: 32px;
     font-weight: 600;
-    margin-bottom: 1.39vh;    /* 15px */
+    margin-bottom: 15px;
 `;
-
 const SavedSub = styled.div`
     font-family: "Noto Sans", Medium;
-    font-size: 1.85vh;        /* 20px */
+    font-size: 20px;
     font-weight: 500;
     color: #868686;
-    margin-bottom: 1.76vh;    /* 19px */
+    margin-bottom: 19px;
 `;
 
 const SaveWrap = styled.div`
@@ -353,7 +333,6 @@ const SaveWrap = styled.div`
 `;
 
 const StyledSaveButton = styled(SaveButton)`
-    margin-top: 5.37vh;       /* 58px */
-    margin-left: 17.43vw;
-    border : none !important;
+    margin-top: 58px;
+    margin-left:450px;
 `;
