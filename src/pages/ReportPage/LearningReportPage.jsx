@@ -1,19 +1,71 @@
 import styled, { css } from "styled-components"
-import {useParams, useLocation} from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { getReportById } from "../../api/report";
+import { useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { RiFileTextLine } from "react-icons/ri";
+import { RiBookOpenLine } from "react-icons/ri";
 
 const LearningReportPage = () => {
-    const {title: rawTitle} = useParams();
-    const {state} = useLocation();
+    // /report/:reportId
+    const {reportId} = useParams();
+    const location = useLocation();
 
-    const title = state?.title ?? decodeURIComponent(rawTitle);
+    //리포트 데이터
+    const [report, setReport] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const date = "2025.10.30";
+    const [isExportOpen, settIsExportOpen] = useState(false);
+    
+    //마운트 시 /report/{reportId}조회
+    useEffect(() => {
+        if(!reportId){
+            setLoading(false);
+            return;
+        }
+
+        const fetchReport = async() => {
+            try{
+                setLoading(true);
+                const data = await getReportById(reportId);
+                setReport(data);
+            }catch (err){
+                setError(err);
+            }finally{
+                setLoading(false);
+            }
+        };
+        fetchReport();
+    }, [reportId]);
+
+    const title = report?.title || report?.creatAT || report?.reports?.[0]?.results?.[0]?.created_at || "";
+    const rawDate = report?.createdAt || report?.created_at || report?.reports?.[0]?.results?.[0]?.created_at || "";
+    const date = rawDate ? rawDate.slice(0, 10) : "";
+
+    if(loading){
+        return <p>리포트를 불러오는 중입니다...</p>
+    }
+    if(error){
+        return <p>리포트를 불러오지 못했어요.</p>
+    }
+
     return(
         <LR_PageWrap>
             <LR_Header>
                 <BtnWrap>수정하기</BtnWrap>
                 <BtnWrap>복사하기</BtnWrap>
-                <OutBtnWrap>내보내기</OutBtnWrap>
+                <ExportWrap>
+                    <OutBtnWrap onClick={() => settIsExportOpen(prev => !prev)}>내보내기</OutBtnWrap>
+
+                    {isExportOpen && (
+                        <OB_DropDown>
+                            <OB_DropDownItem><RiFileTextLine size={18} />pdf로 내보내기</OB_DropDownItem>
+                            <OB_DropDownItem><RiFileTextLine size={18} />Markdonw으로 내보내기</OB_DropDownItem>
+                            <OB_DropDownItem><RiBookOpenLine size={18} />Notion에 저장</OB_DropDownItem>
+                        </OB_DropDown>
+                    )}
+                </ExportWrap>
             </LR_Header>
             
             <LR_ContainWrap>
@@ -23,7 +75,9 @@ const LearningReportPage = () => {
                 </LR_ContainHeader>
                 <hr/>
                 <LR_Contain>
-                    <LR_Detail/>
+                    <LR_Detail>
+                        <pre>{JSON.stringify(report, null, 2)}</pre>
+                    </LR_Detail>
                 </LR_Contain>
             </LR_ContainWrap>
         </LR_PageWrap>
@@ -31,8 +85,9 @@ const LearningReportPage = () => {
 }
 
 export default LearningReportPage;
+
 const LR_PageWrap = styled.div`
-    background: #F4F4F5;
+    ground: #F4F4F5;
     display: flex;
     flex-direction: column;
     gap: 58px;
@@ -66,6 +121,7 @@ const OutBtnWrap = styled.div`
     ${StyledBtn};
     background: #000;
     color: #fff;
+    position: relative;
 `;
 
 const LR_ContainWrap = styled.div`
@@ -104,4 +160,36 @@ const LR_Date = styled.div`
 
 const LR_Detail = styled.div`
     margin-top: 33px;
+    max-width: 1085px;
+
+    pre{
+        white-space: pre-wrap;
+    }
+`;
+
+const ExportWrap = styled.div`
+`;
+
+const OB_DropDown = styled.div`
+    position: absolute;
+    margin-top: 10px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+
+    background: #fff;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 12px;
+    padding: 17px;
+    z-index: 10000;
+`;
+
+const OB_DropDownItem = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    font-family: "Noto Sans", SemiBold;
+    font-weight: 500;
 `;
