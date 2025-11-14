@@ -10,7 +10,7 @@ const Progress = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { entranceId: stateId, topics = [] } = location.state || {};
+  const { entranceId: stateId, topics = [], mode = "전체통합" } = location.state || {};
 
   // 🔥 쿼리스트링에서도 entranceId 가져오기 (state가 없을 때 대비)
   const queryId = new URLSearchParams(location.search).get("entranceId");
@@ -58,6 +58,7 @@ const Progress = () => {
           state: {
             entranceId: finalEntranceId,
             userId: Number(userId),
+            mode,
             topics,
           },
         });

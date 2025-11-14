@@ -10,6 +10,7 @@ import { getResultSummary } from "../../api/result";
 const Summation = () => {
   const location = useLocation();
   const navigate = useNavigate(); 
+  const mode = location.state?.mode || "전체통합";
 
   // entranceId / userId 가져오기
   const queryEntranceId = new URLSearchParams(location.search).get("entranceId");
@@ -104,8 +105,22 @@ const Summation = () => {
 
       {/* 🔥 선택된 topic의 실제 summary 데이터를 Concept로 전달 */}
       <S_ConceptWrap>
-        {currentTopic && <Concept summary={currentTopic} />}
+        {mode === "전체통합"
+        ? topics.map((topic, i) => (
+            <Concept
+              key={i}
+              summary={{ topic, ...summary.results[topic] }}
+            />
+          ))
+        : currentTopic && (
+      <Concept
+        summary={{ topic: topics[selected], ...currentTopic }}
+      />
+    )
+}
+
       </S_ConceptWrap>
+
     </SummationWrap>
   );
 };
@@ -163,7 +178,9 @@ const S_SubTitle = styled.div`
 const S_TopicBtnWrap = styled.div`
   margin-top: 20px;
   margin-left: 512px;
+  width: 400px;
   display: flex;
+  justify-content: center;
   gap: 28px;
 `;
 

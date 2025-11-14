@@ -15,54 +15,54 @@ const LearningReportPage = () => {
   const location = useLocation();
 
 const renderContent = () => {
-  const result = report?.reports?.[0]?.results?.[0];
+  const content = report?.content;
 
-  // 1) 결과가 아예 없으면
-  if (!result) return "내용이 없습니다.";
+  // 1) content 자체가 없을 때
+  if (!content) return "내용이 없습니다.";
 
-  // 2) JSON 파싱 실패한 경우
-  if (result?.content?.error) {
-    return `<p style="color:#666;">⚠ 분석을 진행할 수 없었어요.</p>
-            <p>사유: ${result.content.error}</p>`;
+  // 2) JSON 파싱 실패했을 때
+  if (content.error) {
+    return `
+      <p style="color:#666;">⚠ 분석을 진행할 수 없었어요.</p>
+      <p>사유: ${content.error}</p>
+    `;
   }
 
+  // 3) 파싱 성공한 경우 (content 안에 구조가 있을 때)
   let html = "";
 
-  // ⭐ 새로 알게 된 내용
-  const newItems = result.new_cc_content?.["새로알게된"];
-  if (newItems && Object.keys(newItems).length > 0) {
+  // content.new
+  if (content.new && content.new.length > 0) {
     html += `<h2>✨ 새로 알게 된 내용</h2>`;
-    Object.values(newItems).forEach((item) => {
+    content.new.forEach(item => {
       html += `<p>• ${item}</p>`;
     });
   }
 
-  // ⭐ 바로잡은 개념
-  const redirectItems = result.redirect_cc_content?.["바로잡은"];
-  if (redirectItems && Object.keys(redirectItems).length > 0) {
+  // content.fix
+  if (content.fix && content.fix.length > 0) {
     html += `<h2>🔄 바로잡은 개념</h2>`;
-    Object.values(redirectItems).forEach((obj) => {
+    content.fix.forEach(f => {
       html += `
-        <p><b>잘못된 이해:</b> ${obj.잘못된이해}</p>
-        <p><b>올바른 이해:</b> ${obj.올바른이해}</p>
+        <p><b>잘못된 이해:</b> ${f.wrong}</p>
+        <p><b>올바른 이해:</b> ${f.correct}</p>
       `;
     });
   }
 
-  // ⭐ 참고 자료
-  const refs = result.reference?.["추천자료"];
-  if (refs && Object.keys(refs).length > 0) {
+  // content.ref
+  if (content.ref && content.ref.length > 0) {
     html += `<h2>📚 참고 자료</h2>`;
-    Object.values(refs).forEach((ref) => {
-      html += `<p>• <a href="${ref.링크}" target="_blank">${ref.제목}</a></p>`;
+    content.ref.forEach(ref => {
+      html += `<p>• <a href="${ref.url}" target="_blank">${ref.title}</a></p>`;
     });
   }
 
-  // 모든 섹션이 비어있으면
   if (!html) return "내용이 없습니다.";
 
   return html;
 };
+
 
   // 리포트 데이터
   const [report, setReport] = useState(null);

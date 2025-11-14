@@ -43,6 +43,7 @@ const SelectTopicPage = () => {
 
       navigate(`/progress?entranceId=${res.entranceId}`, {
         state: {
+          mode,
           topics: mode === "전체통합"
             ? topics.map((t) => t.name)
             : [selectedTopic]

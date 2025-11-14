@@ -10,29 +10,19 @@ const Concept = ({ summary }) => {
   --------------------------- */
   const newKey = summary.newConcept ? Object.keys(summary.newConcept)[0] : null;
   const newList =
-    newKey && summary.newConcept[newKey]
-      ? Object.values(summary.newConcept[newKey])
+    summary.newConcept?.새로알게된
+      ? Object.values(summary.newConcept.새로알게된)
       : [];
 
-  /* --------------------------
-     2. 바로잡은 개념
-  --------------------------- */
-  const redirectKey = summary.redirectConcept
-    ? Object.keys(summary.redirectConcept)[0]
-    : null;
 
-  const redirectObj =
-    redirectKey && summary.redirectConcept[redirectKey]
-      ? summary.redirectConcept[redirectKey]
-      : null;
+/* --------------------------
+   2. 바로잡은 개념
+--------------------------- */
 
-  const wrongConcept = redirectObj?.잘못된이해 || null;
-
-  const correctConceptList = redirectObj?.올바른이해
-    ? Array.isArray(redirectObj.올바른이해)
-      ? redirectObj.올바른이해
-      : [redirectObj.올바른이해]
-    : [];
+// ‘바로잡은’ 안의 모든 객체 꺼내기 (1,2,3…)
+const redirectItems = summary.redirectConcept?.바로잡은
+  ? Object.values(summary.redirectConcept.바로잡은)
+  : [];
 
   /* --------------------------
      3. 추천 자료
@@ -40,8 +30,8 @@ const Concept = ({ summary }) => {
   const refKey = summary.reference ? Object.keys(summary.reference)[0] : null;
 
   const referenceList =
-    refKey && summary.reference[refKey]
-      ? Object.values(summary.reference[refKey])
+    summary.reference?.추천자료
+      ? Object.values(summary.reference.추천자료)
       : [];
 
   return (
@@ -67,30 +57,35 @@ const Concept = ({ summary }) => {
         )}
 
         {/* 🟠 바로 잡은 개념 */}
-        {wrongConcept && (
+        {redirectItems.length > 0 && (
           <>
             <Cc_Title>바로 잡은 개념</Cc_Title>
-            <Re_Detail>
-              <WrongCcWrap>
-                <Cc_DetailTitle>잘못된 이해</Cc_DetailTitle>
-                <ul>
-                  <li>{wrongConcept}</li>
-                </ul>
-              </WrongCcWrap>
 
-              <img src={Arrow} alt="" />
+            {redirectItems.map((item, i) => (
+              <Re_Detail key={i}>
+                <WrongCcWrap>
+                  <Cc_DetailTitle>잘못된 이해</Cc_DetailTitle>
+                  <ul>
+                    <li>{item.잘못된이해}</li>
+                  </ul>
+                </WrongCcWrap>
 
-              <Re_WrongWrap>
-                <Cc_DetailTitle>올바른 이해</Cc_DetailTitle>
-                <ul>
-                  {correctConceptList.map((v, i) => (
-                    <li key={i}>{v}</li>
-                  ))}
-                </ul>
-              </Re_WrongWrap>
-            </Re_Detail>
+                <img src={Arrow} alt="" />
+
+                <Re_WrongWrap>
+                  <Cc_DetailTitle>올바른 이해</Cc_DetailTitle>
+                  <ul>
+                    {Array.isArray(item.올바른이해)
+                      ? item.올바른이해.map((v, idx) => <li key={idx}>{v}</li>)
+                      : <li>{item.올바른이해}</li>
+                    }
+                  </ul>
+                </Re_WrongWrap>
+              </Re_Detail>
+            ))}
           </>
         )}
+
 
         {/* 🟣 추천 자료 */}
         {referenceList.length > 0 && (

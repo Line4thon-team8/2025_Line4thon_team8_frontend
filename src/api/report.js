@@ -48,6 +48,7 @@ export const createReport = async ({
 // 리포트 단건 조회 GET /report/{reportId}
 export const getReportById = async (reportId) => {
   const { data } = await api.get(`/report/${reportId}`);
+  console.log("📌 [getReportById] 응답:", data);
   return data;
 };
 
