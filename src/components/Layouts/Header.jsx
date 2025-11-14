@@ -1,19 +1,28 @@
 // Header.jsx
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Header = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  // 현재 페이지가 LandingPage인지 여부
+  const isLanding = pathname === "/";
 
   return (
     <HeaderContainer>
       <Logo onClick={() => navigate("/")}>crux</Logo>
-      <NavItem onClick={() => navigate("/mypage")}>마이페이지</NavItem>
+
+      {/* LandingPage에서는 NavItem 숨기기 */}
+      {!isLanding && (
+        <NavItem onClick={() => navigate("/mypage")}>마이페이지</NavItem>
+      )}
     </HeaderContainer>
   );
 };
 
 export default Header;
+
 
 // ---------------- 스타일 ---------------- //
 

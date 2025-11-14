@@ -9,6 +9,7 @@ import { getUserMyPage, getUserActivity } from "../../api/mypage";
 import { getReportsByDate } from "../../api/mypage";
 
 const MyPage = () => {
+  
   const [userData, setUserData] = useState(null);
   const [activityData, setActivityData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(dayjs().format("YYYY-MM-DD"));
