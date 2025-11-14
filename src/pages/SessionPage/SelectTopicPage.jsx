@@ -1,157 +1,239 @@
-import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
-import Button from "../../components/Buttons/Button";
-import SegmentedControl from "../../components/Buttons/SegmentedControl";
-import { useState } from "react";
-import { startSession } from "../../api/session";
+import ProgBar from "../../components/Progress/ProgBar";
+import Loader from "../../components/Progress/Loader";
+import Check from "../../assets/check.svg";
+import { useEffect, useState, useMemo } from "react";
+import { useLocation } from "react-router-dom";
+import { connectEntranceProgress } from "../../api/progress";
 
-const COLORS = ["#DAF77A", "#C8EF7F", "#B9E774", "#A6DE65"];
-
-const SelectTopicPage = () => {
+const Progress = () => {
   const location = useLocation();
-  const navigate = useNavigate();
+  const { entranceId, topics = [] } = location.state || {};
 
-  const { topics } = location.state || { topics: [] };
+  const [topicProgress, setTopicProgress] = useState({});
 
-  // 🔥 스웨거 스펙에 맞게 수정
-  const [mode, setMode] = useState("전체통합");
-  const [selectedTopic, setSelectedTopic] = useState(null);
+  // topics / topicProgress 기반으로 화면에 쓸 mockData 생성
+  const mockData = useMemo(() => {
+    if (topics.length === 0) return [];
 
-  const handleCreateSession = async () => {
-    const userId = localStorage.getItem("userId");
-    const extractId = new URLSearchParams(location.search).get("extractId");
+    return topics.map((t) => {
+      const info = topicProgress[t] || {
+        completed: 0,
+        progtext: "분석 대기 중",
+      };
+      return {
+        progName: t,
+        completed: info.completed,
+        progtext: info.progtext,
+      };
+    });
+  }, [topics, topicProgress]);
 
-    if (!userId) return alert("로그인 후 이용해주세요!");
+  // SSE 연결
+  useEffect(() => {
+    if (!entranceId) return;
 
-    // 🔥 전체통합이면 topic 은 "전체"
-    const topic =
-      mode === "전체통합" ? "전체" : selectedTopic ?? "";
+    const stop = connectEntranceProgress({
+      entranceId,
+      onEvent: (type, data) => {
+        console.log("🔥 SSE EVENT:", type, data);
 
-    if (mode === "특정주제" && !selectedTopic) {
-      return alert("특정 주제를 먼저 선택해주세요!");
-    }
+        const { progress, step } = data;
 
-    try {
-      const res = await startSession(userId, extractId, mode, topic);
+        // 서버는 topic: "전체" 로만 보내므로
+        // UI 의 모든 topic 에 progress 를 일괄 적용한다
+        setTopicProgress((prev) => {
+          let newState = { ...prev };
 
-      // LocalStorage 저장
-      localStorage.setItem("entranceId", res.entranceId);
-      localStorage.setItem("extractId", extractId);
+          topics.forEach((topicName) => {
+            const prevInfo = prev[topicName] || {
+              completed: 0,
+              progtext: "분석 대기 중",
+            };
 
-      alert(`세션이 성공적으로 생성되었습니다!\n세션 ID: ${res.entranceId}`);
+            let progtext = prevInfo.progtext;
+            if (type === "start") progtext = `${step} 시작...`;
+            else if (type === "done") progtext = `${step} 완료`;
+            else if (type === "update") progtext = `${step} 진행 중...`;
+            else if (type === "complete") progtext = "분석 완료";
 
-      navigate(`/progress?entranceId=${res.entranceId}`);
-    } catch (err) {
-      console.error(err);
-      alert("세션 생성 중 오류가 발생했습니다.");
-    }
-  };
+            newState[topicName] = {
+              completed: progress ?? prevInfo.completed,
+              progtext,
+            };
+          });
+
+          return newState;
+        });
+      },
+    });
+
+    return () => stop();
+  }, [entranceId, topics]);
+
+  const totalCompleted =
+    mockData.length === 0
+      ? 0
+      : Math.round(
+          mockData.reduce((sum, item) => sum + item.completed, 0) /
+            mockData.length
+        );
+
+  const renderStatus = (completed) =>
+    completed === 100 ? <CheckImg src={Check} /> : <Loader />;
 
   return (
     <Container>
-      <Title>분석할 내용을 선택하세요</Title>
-      <Description>
-        AI가 대화 내용을 분석해 학습 리포트를 준비합니다.
-      </Description>
+      <Title>전체 진행 상황</Title>
 
-      {/* 🔥 모드 선택 — 전체통합 | 특정주제 */}
-      <SegmentedControl
-        options={["전체통합", "특정주제"]}
-        onChange={setMode}
-        defaultValue="전체통합"
-      />
+      {/*total 진행률*/}
+      <ProgressWrap>
+        <TotalProgWrap>
+          <TotalPer>
+            <ProgSubTitle>진행률</ProgSubTitle>
+            <TotalCompleted>{totalCompleted}%</TotalCompleted>
+          </TotalPer>
+          <ProgBar
+            completed={totalCompleted}
+            showPer={false}
+            width="1113px"
+            height="25px"
+          />
+        </TotalProgWrap>
 
-      <ChartWrapper>
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={topics}
-              dataKey="value"
-              nameKey="name"
-              innerRadius={75}
-              outerRadius={110}
-              onClick={(entry) => mode === "특정주제" && setSelectedTopic(entry.name)}
-            >
-              {topics.map((entry, index) => (
-                <Cell
-                  key={index}
-                  fill={COLORS[index % COLORS.length]}
-                  stroke="#fff"
-                  strokeWidth={2}
-                  opacity={
-                    mode === "특정주제" &&
-                    selectedTopic &&
-                    selectedTopic !== entry.name
-                      ? 0.4
-                      : 1
-                  }
-                />
-              ))}
-            </Pie>
-            <Tooltip formatter={(v, n) => [`${v}%`, n]} />
-          </PieChart>
-        </ResponsiveContainer>
-      </ChartWrapper>
-
-      {/* 🔥 오른쪽 옆에 뜨는 UI */}
-      {selectedTopic && mode === "특정주제" && (
-        <SelectedTopicTag>{selectedTopic}</SelectedTopicTag>
-      )}
-
-      {/* 🔥 버튼 활성화/비활성화 조건 */}
-      <Button
-        variant="primary"
-        onClick={handleCreateSession}
-        disabled={mode === "특정주제" && !selectedTopic}
-      >
-        분석하기
-      </Button>
+        {/* 상세 진행률 */}
+        <SubProgWrap>
+          {mockData.map((item) => (
+            <ProgItem key={item.progName}>
+              <LoaderWrap>
+                <StatusWrap>{renderStatus(item.completed)}</StatusWrap>
+                <Detailtxt>
+                  <DetailWrap>
+                    <ProgName>{item.progName}</ProgName>
+                    <DetailCompleted>{item.completed}%</DetailCompleted>
+                  </DetailWrap>
+                  <ProgText>{item.progtext}</ProgText>
+                </Detailtxt>
+              </LoaderWrap>
+              <ProgBar completed={item.completed} progcheck={item.progcheck} />
+            </ProgItem>
+          ))}
+        </SubProgWrap>
+      </ProgressWrap>
     </Container>
   );
 };
 
-export default SelectTopicPage;
+export default Progress;
 
-
-// ---------------- Styled Components ---------------- //
+/* ===== styled-components ===== */
 
 const Container = styled.div`
+  height: 100%;
+  width: 100%;
+  padding-bottom: 80px;
+`;
+
+const ProgressWrap = styled.div`
+  margin-left: 143px;
+`;
+
+const Title = styled.div`
+  font-family: "Noto Sans", Helvetica;
+  font-weight: 700;
+  font-size: 56px;
+  letter-spacing: -0.56px;
+  white-space: nowrap;
+  margin-left: 136px;
+`;
+
+const ProgSubTitle = styled.div`
+  margin-top: 18px;
+  font-weight: 400;
+  font-size: 24px;
+  color: #868686;
+  white-space: nowrap;
+`;
+
+const TotalCompleted = styled.div`
+  font-style: "Noto Sans", SemiBold;
+  font-weight: 600;
+  font-size: 40px;
+  color: #226cff;
+  margin-bottom: 13px;
+`;
+
+const TotalPer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 963px;
+`;
+
+const TotalProgWrap = styled.div`
+  margin-bottom: 46px;
+`;
+
+const LoaderWrap = styled.div`
+  margin-bottom: 8px;
+  display: flex;
+`;
+
+const Detailtxt = styled.div`
+  margin-left: 25px;
+  flex: 1;
+`;
+
+const ProgName = styled.div`
+  font-style: "Roboto", SemiBold;
+  font-weight: 600;
+  font-size: 40px;
+`;
+
+const ProgText = styled.div`
+  font-style: "Roboto", Regular;
+  font-weight: 400;
+  font-size: 24px;
+  color: #868686;
+`;
+
+const DetailCompleted = styled.div`
+  font-style: "Roboto", Medium;
+  font-weight: 500;
+  font-size: 24px;
+  color: #226cff;
+  margin-left: auto;
+`;
+
+const DetailWrap = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+`;
+
+const ProgItem = styled.div`
+  background: #ffff;
+  padding: 30px 45px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 30px;
+  width: 1113px;
+`;
+
+const SubProgWrap = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 57px;
+`;
+
+const StatusWrap = styled.div`
+  display: flex;
+  flex-direction: center;
   align-items: center;
-  padding-top: 10vh;
-  height: 100vh;
 `;
 
-const Title = styled.h1`
-  font-size: 2.2rem;
-  font-weight: 800;
-  margin-bottom: 0.8rem;
-  text-align: center;
-`;
-
-const Description = styled.p`
-  font-size: 1rem;
-  font-weight: 500;
-  margin-bottom: 2rem;
-  color: #555;
-  text-align: center;
-`;
-
-const ChartWrapper = styled.div`
-  width: 360px;
-  height: 360px;
-  margin-bottom: 1.5rem;
-  position: relative;
-`;
-
-const SelectedTopicTag = styled.div`
-  background: #dff58a;
-  padding: 10px 20px;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #111;
-  margin-bottom: 1.5rem;
+const CheckImg = styled.img`
+  background-color: #226cff;
+  padding: 17px 16px;
+  border-radius: 20px;
+  width: 90px;
+  height: 90px;
 `;

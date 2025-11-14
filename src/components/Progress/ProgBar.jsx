@@ -13,7 +13,7 @@ const ProgBar = ({completed, width, height, progtext, progcheck}) =>{
                         maxCompleted={100} //완료값
                         isLabelVisible={false} //내부 라벨 숨김
                         baseBgColor="#D1D1D1"
-                        bgColor="#226CFF"
+                        bgColor="#000000"
                         height={height || "20px"}
                         width={width || "1009px"}
                         progtext = {progtext}
@@ -36,7 +36,7 @@ const ProgCheck = styled.div`
 `;
 
 const CheckImg = styled.img`
-    background-color: #226CFF;
+    background-color: #000000;
     padding : 17px 16px;
     border-radius: 20px;
 `;

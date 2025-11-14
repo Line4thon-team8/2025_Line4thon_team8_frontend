@@ -7,7 +7,7 @@ const Loader = () => {
 
     const override = {
         borderWidth: "6px", //두께
-        borderColor: "#ffffff #226CFF #226CFF #ffffff"
+        borderColor: "#ffffff #000000 #000000 #ffffff"
     };
 
     return (
@@ -26,7 +26,7 @@ const Loader = () => {
 export default Loader;
 
 const LoaderWrap = styled.div`
-    background-color: #226CFF75;
+    background-color: #00000075;
     width: 90px;
     height: 90px;
     padding: 22px 22px 22px 23px;
