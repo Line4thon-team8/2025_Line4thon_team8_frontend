@@ -1,7 +1,7 @@
-import client from "./client";
+import api from "./axios";
 
 export const analyze = async ({userId, url}) => {
-    const {data} = await client.get("/chat/analyze", {
+    const {data} = await api.get("/chat/analyze", {
         params: {
             userId: userId ?? 1,
             url: url ?? "https://chatgpt.com/share/68fa6d87-b2c8-8011-b6c5-bd3272ea992c",
