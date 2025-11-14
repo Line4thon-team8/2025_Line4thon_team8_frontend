@@ -5,7 +5,7 @@ import Button from "../../components/Buttons/Button";
 import LoginModal from "../../components/Modals/LoginModal";
 import SignupModal from "../../components/Modals/SignupModal";
 import { useState } from "react";
-import LandingBG from "../../assets/landing.svg";
+import LandingBG from "../../assets/landingpage.svg";
 
 
 const LandingPage = () => {
@@ -47,7 +47,7 @@ export default LandingPage;
 // styled-components
 
 const Container = styled.div`
-  position: relative;   /* ⭐ z-index 컨텍스트 생성 */
+  position: relative;   /* z-index 컨텍스트 생성 */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -63,7 +63,7 @@ const BackgroundImage = styled.img`
   width: 550px;
   opacity: 0.5;
   z-index: 0;
-  pointer-events: none;   /* ⭐ 클릭 막힘 → 버튼 클릭 가능 */
+  pointer-events: none;   /* 클릭 막힘 → 버튼 클릭 가능 */
 `;
 
 const Title = styled.h1`
