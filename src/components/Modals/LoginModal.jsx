@@ -21,9 +21,9 @@ const LoginModal = ({ onClose, onSignupClick }) => {
 
     try {
       const res = await loginUser(email, password);
-      alert(`로그인 성공! 사용자 ID: ${res.id}`);
+      alert(`로그인 성공 (사용자 ID: ${res.id})`);
       navigate("/main");
-      setMessage("로그인 성공!");
+      setMessage("로그인 성공");
       onClose();
     } catch (err) {
       if (err.response?.status === 400)

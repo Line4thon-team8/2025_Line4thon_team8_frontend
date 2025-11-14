@@ -6,6 +6,11 @@ import LoginModal from "../../components/Modals/LoginModal";
 import SignupModal from "../../components/Modals/SignupModal";
 //import useModal from "../../hooks/useModal";
 import { useState } from "react";
+<<<<<<< HEAD
+=======
+import LandingBG from "../../assets/landingpage.svg";
+
+>>>>>>> 3383509 (fix/#7: 메인페이지 api 연결 수정)
 
 const LandingPage = () => {
 
@@ -44,6 +49,10 @@ export default LandingPage;
 // styled-components
 
 const Container = styled.div`
+<<<<<<< HEAD
+=======
+  position: relative;   /* z-index 컨텍스트 생성 */
+>>>>>>> 3383509 (fix/#7: 메인페이지 api 연결 수정)
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -51,6 +60,20 @@ const Container = styled.div`
   height: 100vh;
 `;
 
+<<<<<<< HEAD
+=======
+const BackgroundImage = styled.img`
+  position: absolute;
+  left: 0px;
+  top: 50%;
+  transform: translateY(-60%);
+  width: 550px;
+  opacity: 0.5;
+  z-index: 0;
+  pointer-events: none;   /* 클릭 막힘 → 버튼 클릭 가능 */
+`;
+
+>>>>>>> 3383509 (fix/#7: 메인페이지 api 연결 수정)
 const Title = styled.h1`
   font-size: 2rem;
   margin-bottom: 2rem;

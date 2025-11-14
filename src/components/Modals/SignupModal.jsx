@@ -95,7 +95,7 @@ const SignupModal = ({ onClose }) => {
             onChange={(e) => setNickname(e.target.value)}
             buttonText="중복확인"
             onButtonClick={async () => {
-              if (!nickname) return alert("닉네임을 입력해주세요!");
+              if (!nickname) return alert("닉네임을 입력해주세요");
               try {
                 const res = await checkNickname(nickname);
                 if (res.available === true || res.additionalProp1 === true) {
