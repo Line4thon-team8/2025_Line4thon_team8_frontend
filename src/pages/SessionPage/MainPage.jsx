@@ -78,9 +78,9 @@ const Container = styled.div`
 
 const BackgroundImage = styled.img`
   position: absolute;
-  left: 0px;
+  left: 200px;
   top: 28%;
-  transform: translateX(100%);
+  transform: translateX(120%);
   width: 550px;
   z-index: 0;
   pointer-events: none;
