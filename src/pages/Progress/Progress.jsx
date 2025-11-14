@@ -3,31 +3,24 @@ import ProgBar from "../../components/Progress/ProgBar";
 import Loader from "../../components/Progress/Loader";
 import Check from "../../assets/check.svg";
 import { useEffect, useState, useMemo } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { connectEntranceProgress } from "../../api/progress";
 
 const Progress = () => {
   const location = useLocation();
-  const { entranceId: stateId, topics = [] } = location.state || {};
+  const navigate = useNavigate();
 
-  // 🔥 쿼리스트링에서도 entranceId 가져오기 (state가 없을 때 대비)
-  const queryId = new URLSearchParams(location.search).get("entranceId");
-
-  // 최종 entranceId = state 우선, 없으면 query
-  const finalEntranceId = stateId || queryId;
+  const { entranceId, topics = [] } = location.state || {};
 
   const [topicProgress, setTopicProgress] = useState({});
 
-  // 화면 표시용 데이터 만들기
+  // topics + progress 로 렌더링 데이터 만들기
   const mockData = useMemo(() => {
-    if (topics.length === 0) return [];
-
     return topics.map((t) => {
       const info = topicProgress[t] || {
         completed: 0,
         progtext: "분석 대기 중",
       };
-
       return {
         progName: t,
         completed: info.completed,
@@ -38,22 +31,17 @@ const Progress = () => {
 
   // SSE 연결
   useEffect(() => {
-    if (!finalEntranceId) {
-      console.warn("❌ entranceId 없음 → SSE 연결 안 함");
-      return;
-    }
-
-    console.log("🔗 SSE Connecting with entranceId =", finalEntranceId);
+    if (!entranceId) return;
 
     const stop = connectEntranceProgress({
-      entranceId: finalEntranceId,
+      entranceId,
 
       onEvent: (type, data) => {
         console.log("🔥 SSE EVENT:", type, data);
 
         const { progress, step } = data;
 
-        // 서버가 topic:"전체"만 보내므로 → 모든 주제에 동일 적용
+        // 🔥 UI 모든 topic 에 동일 progress 업데이트
         setTopicProgress((prev) => {
           let newState = { ...prev };
 
@@ -77,13 +65,24 @@ const Progress = () => {
 
           return newState;
         });
+
+        // 🔥 complete 이벤트 오면 Summation 페이지로 이동
+        if (type === "complete") {
+          const userId = localStorage.getItem("userId");
+
+          navigate("/summation", {
+            state: {
+              entranceId,
+              userId,
+            },
+          });
+        }
       },
     });
 
     return () => stop();
-  }, [finalEntranceId, topics]);
+  }, [entranceId, topics, navigate]);
 
-  // 전체 평균
   const totalCompleted =
     mockData.length === 0
       ? 0
@@ -138,8 +137,7 @@ const Progress = () => {
 
 export default Progress;
 
-/* ===== styled-components ===== */
-
+/* 스타일 그대로 */
 const Container = styled.div`
   height: 100%;
   width: 100%;
@@ -171,7 +169,7 @@ const TotalCompleted = styled.div`
   font-style: "Noto Sans", SemiBold;
   font-weight: 600;
   font-size: 40px;
-  color: #000000;
+  color: #226cff;
   margin-bottom: 13px;
 `;
 
@@ -212,7 +210,7 @@ const DetailCompleted = styled.div`
   font-style: "Roboto", Medium;
   font-weight: 500;
   font-size: 24px;
-  color: #000000;
+  color: #226cff;
   margin-left: auto;
 `;
 
@@ -242,7 +240,7 @@ const StatusWrap = styled.div`
 `;
 
 const CheckImg = styled.img`
-  background-color: #000000;
+  background-color: #226cff;
   padding: 17px 16px;
   border-radius: 20px;
   width: 90px;

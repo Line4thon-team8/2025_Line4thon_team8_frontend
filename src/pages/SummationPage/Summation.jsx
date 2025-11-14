@@ -1,15 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import styled, { css, StyleSheetManager } from "styled-components";
-import { useNavigate } from "react-router-dom";
+
 import TopicBtn from "../../components/Buttons/TopicButton";
 import Concept from "../../components/Summation/Concept";
 import BubbleChart from "../../components/BubbleChart/BubbleChart";
-import MetallicRingImg from "../../assets/metallicRing.svg";
+import { getResultSummary } from "../../api/result";
 
 const Summation = () => {
-  const navigate = useNavigate();
+  const location = useLocation();
+  const { entranceId, userId } = location.state || {};
+
   const [selected, setSelected] = useState(null);
+  const [summary, setSummary] = useState(null);
+
   const topics = ["React Hooks", "async/await", "에러 핸들링"];
+
+  // 🔥 요약 데이터 불러오기
+  useEffect(() => {
+    if (!entranceId || !userId) return;
+
+    (async () => {
+      try {
+        const data = await getResultSummary(entranceId, userId);
+        console.log("🔥 요약 데이터:", data);
+        setSummary(data);
+      } catch (err) {
+        console.error("요약 조회 실패", err);
+      }
+    })();
+  }, [entranceId, userId]);
 
   const toConcept = (index) => {
     const el = document.getElementById(`concept-${index}`);
@@ -19,74 +39,38 @@ const Summation = () => {
       window.scrollTo({ top: y, behavior: "smooth" });
     }
   };
+
   return (
     <SummationWrap>
-      <MainContent>
-        {/* 왼쪽 패널 - 전체 요약 */}
-        <LeftPanel>
-          <TitleRow>
-            <S_Title>전체 요약</S_Title>
-            <ReportButton onClick={() => navigate("/report")}>
-              학습 리포트 보기 &gt;
-            </ReportButton>
-          </TitleRow>
-          <S_SubTitle>클릭 시 해당 주제의 요약을 바로 볼 수 있어요</S_SubTitle>
+      <S_Title>전체 요약</S_Title>
+      <S_SubTitle>클릭 시 해당 주제의 요약을 바로 볼 수 있어요</S_SubTitle>
 
-          <TopicVisualization>
-            <StyledMetallicRing src={MetallicRingImg} alt="metallic ring" />
+      <S_TopicBtnWrap>
+        <StyleSheetManager shouldForwardProp={(prop) => prop !== "active"}>
+          {topics.map((topic, i) => (
+            <StyledTopicBtn
+              key={i}
+              $active={selected === i}
+              onClick={() => {
+                setSelected(i);
+                toConcept(i);
+              }}
+            >
+              {topic}
+            </StyledTopicBtn>
+          ))}
+        </StyleSheetManager>
+      </S_TopicBtnWrap>
 
-            {/* 주제 버튼들 */}
-            <StyleSheetManager shouldForwardProp={(prop) => prop !== "active"}>
-              <TopicButton
-                position="top-right"
-                $active={selected === 0}
-                onClick={() => {
-                  setSelected(0);
-                  toConcept(0);
-                }}
-              >
-                {topics[0]}
-              </TopicButton>
+      <InsightTitle>주제별 학습 인사이트</InsightTitle>
+      <InsightSub>버블이 오른쪽 위로 갈수록 더 익숙하지 않은 주제를 의미해요</InsightSub>
+      <InsightWrap>
+        <BubbleChart />
+      </InsightWrap>
 
-              <TopicButton
-                position="left"
-                $active={selected === 1}
-                onClick={() => {
-                  setSelected(1);
-                  toConcept(1);
-                }}
-              >
-                {topics[1]}
-              </TopicButton>
-
-              <TopicButton
-                position="bottom-right"
-                $active={selected === 2}
-                onClick={() => {
-                  setSelected(2);
-                  toConcept(2);
-                }}
-              >
-                {topics[2]}
-              </TopicButton>
-            </StyleSheetManager>
-          </TopicVisualization>
-        </LeftPanel>
-
-        {/* 오른쪽 패널 - 주제별 학습 인사이트 */}
-        <RightPanel>
-          <InsightTitle>주제별 학습 인사이트</InsightTitle>
-          <InsightSub>
-            버블이 오른쪽 위로 갈수록 더 익숙하지 않은 주제를 의미해요
-          </InsightSub>
-          <InsightWrap>
-            <BubbleChart />
-          </InsightWrap>
-        </RightPanel>
-      </MainContent>
-
+      {/* 🔥 summary 내용은 여기서 Concept 컴포넌트로 내려 줄 예정 */}
       <S_ConceptWrap>
-        <Concept />
+        <Concept summary={summary} />
       </S_ConceptWrap>
     </SummationWrap>
   );
@@ -94,124 +78,51 @@ const Summation = () => {
 
 export default Summation;
 
+/* 스타일 그대로 */
 const SummationWrap = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 108px;
-  width: 100%;
-`;
-
-const MainContent = styled.div`
-  display: flex;
-  gap: 40px;
-  margin-top: 89px;
-  padding: 0 130px;
-  align-items: flex-start;
-`;
-
-const TitleRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 20px;
-`;
-
-const LeftPanel = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-`;
-
-const RightPanel = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
 `;
 
 const S_Title = styled.div`
   font-family: "Noto Sans", Bold;
   font-weight: 700;
   font-size: 64px;
+  margin-top: 89px;
+  margin-left: 594px;
 `;
 
 const S_SubTitle = styled.div`
+  margin-top: 20px;
+  margin-left: 534px;
   font-family: "Noto Sans", Medium;
   font-size: 20px;
   color: #868686;
-  margin-bottom: 20px;
 `;
 
-const TopicVisualization = styled.div`
-  position: relative;
-  width: 100%;
-  min-height: 400px;
-  margin-top: 40px;
-`;
-
-const StyledMetallicRing = styled.img`
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 250px;
-  height: 450px;
-  z-index: 1;
-`;
-
-const TopicButton = styled(({ position, $active, ...rest }) => {
-  void $active;
-  void position;
-  return <TopicBtn {...rest} />;
-})`
-  position: absolute;
-  width: 211px;
-  height: 139px;
-  padding: 0;
-  z-index: 2;
-
+const S_TopicBtnWrap = styled.div`
+  margin-top: 20px;
+  margin-left: 512px;
   display: flex;
-  flex-wrap: nowrap;
+  gap: 28px;
+`;
+
+const StyledTopicBtn = styled(({ $active, ...rest }) => <TopicBtn {...rest} />)`
+  width: 121px;
+  height: 41px;
+  padding: 0;
+  display: flex;
   justify-content: center;
   align-items: center;
 
-  text-align: center;
-  font-family: "Noto Sans";
-  font-size: 30px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 160%; /* 48px */
-
+  font-size: 16px;
+  font-family: "Noto Sans", Regular;
+  font-weight: 400;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  
-  /* 기본 배경색 */
-  background-color: #E6E6E8 !important;
-  border: none;
 
-  ${({ position }) => {
-    switch (position) {
-      case "top-right":
-        return css`
-          top: 10px;
-          left: 5px;
-        `;
-      case "left":
-        return css`
-          top: 150px;
-          left: 200px;
-        `;
-      case "bottom-right":
-        return css`
-          top: 290px;
-          left: 5px;
-        `;
-      default:
-        return css``;
-    }
-  }}
-
-  /* 호버 시 배경색 변경 */
   &&:hover {
-    background-color: #D0D0D1 !important;
+    background-color: inherit !important;
     color: inherit !important;
     border-color: inherit !important;
   }
@@ -226,64 +137,43 @@ const TopicButton = styled(({ position, $active, ...rest }) => {
       &&:hover {
         background-color: #226cff !important;
         color: #ffffff !important;
-        border-color: #226cff !important;
       }
     `}
 `;
 
 const InsightTitle = styled.div`
+  margin-top: 27px;
+  margin-left: 578px;
   font-family: "Noto Sans", SemiBold;
-  font-weight: 600;
   font-size: 32px;
-  margin-bottom: 10px;
 `;
 
 const InsightSub = styled.div`
+  margin-left: 468px;
   font-family: "Noto Sans", SemiBold;
   font-weight: 500;
   font-size: 20px;
   color: #868686;
-  margin-bottom: 30px;
 `;
 
 const InsightWrap = styled.div`
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 456px;
+  margin-top: 30px;
+  margin-left: 407px;
+  width: 626px;
+  height: 456px;
   border-radius: 10px;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  background: #ffffff;
-`;
+  background: white;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
 
-const ReportButton = styled.button`
-  padding: 10px 20px;
-  background: #e6e6e8;
-  border-radius: 20px;
-  border: none;
-  font-family: "Noto Sans", Medium;
-  font-size: 16px;
-  font-weight: 500;
-  color: #000;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-  white-space: nowrap;
-
-  &:hover {
-    opacity: 0.7;
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const S_ConceptWrap = styled.div`
   margin-top: 182px;
   margin-left: 130px;
-
   display: flex;
   flex-direction: column;
-
   gap: 48px;
-  align-items: stretch;
 `;
