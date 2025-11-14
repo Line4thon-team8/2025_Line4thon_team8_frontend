@@ -7,7 +7,6 @@ import SignupModal from "../../components/Modals/SignupModal";
 import { useState } from "react";
 import LandingBG from "../../assets/landingpage.svg";
 
-
 const LandingPage = () => {
 
   const [activeModal, setActiveModal] = useState(null);
@@ -48,7 +47,6 @@ export default LandingPage;
 
 const Container = styled.div`
   position: relative;   /* z-index 컨텍스트 생성 */
-
   display: flex;
   flex-direction: column;
   align-items: center;

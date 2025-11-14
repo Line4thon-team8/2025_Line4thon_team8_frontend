@@ -51,24 +51,24 @@ const TopicReportCard = ({ learningtitle, onView }) => {
 export default TopicReportCard;
 
 const LearningWrap = styled.div`
-  width: 296px;
-  height: 199px;
+  width: 15.41vw;
+  height: 18.43vh;
   background: #fff;
-  padding: 24px 37px;
+  padding: 2.22vh 1.93vw;
 
-  border-radius: 20px;
+  border-radius: 1.85vh;
   border: 1px solid #EFF0F3;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0px 0.37vh 0.37vh rgba(0, 0, 0, 0.25);
 
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 2.22vh;
 `;
 
 const LearningTitle = styled.div`
   font-family: "Noto Sans", 500;
   font-weight: 500;
-  font-size: 20px;
+  font-size: 1.85vh;          /* 20px → 20/1080 */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -78,15 +78,15 @@ const LearningTitle = styled.div`
 `;
 
 const Tooltip = styled.div`
-  position: fixed;               /* 화면(뷰포트) 기준 */
+  position: fixed;
   white-space: nowrap;
-  background: transparent;       /* 투명 배경 */
+  background: transparent;
   color: #000;
   z-index: 1000;
-  pointer-events: none;          /* 툴팁 위에 마우스 가도 무시 */
+  pointer-events: none;
 
-  font-size: 18px;
-  padding: 2px 4px;
+  font-size: 1.66vh;          /* 18px → 18/1080 */
+  padding: 0.18vh 0.20vw;
 
   opacity: 0;
   animation: fadeIn 0.08s ease-out forwards;
@@ -94,7 +94,7 @@ const Tooltip = styled.div`
   @keyframes fadeIn {
     from {
       opacity: 0;
-      transform: translateX(-4px);
+      transform: translateX(-0.20vw);
     }
     to {
       opacity: 1;
@@ -107,14 +107,14 @@ const LearningCheck = styled.div`
   background: #000;
   color: #fff;
 
-  width: 221px;
-  height: 39px;
-  padding: 15px 84px;
-  border-radius: 12px;
+  width: 11.5vw;
+  height: 3.61vh;
+  padding: 1.38vh 4.37vw;
+  border-radius: 1.11vh;
 
   font-family: "Noto Sans", SemiBold;
   font-weight: 600;
-  font-size: 18px;
+  font-size: 1.66vh;
 
   display: flex;
   align-items: center;
