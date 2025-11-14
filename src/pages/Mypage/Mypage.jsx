@@ -1,55 +1,62 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import dayjs from "dayjs";
+
 import ProfileCard from "./components/ProfileCard";
 import ActivityCalendar from "./components/ActivityCalendar";
 import DailySummary from "./components/DailySummary";
 import RecentReports from "./components/RecentReports";
-import { getUserMyPage, getUserActivity } from "../../api/mypage";
-import { getReportsByDate } from "../../api/mypage";
+
+import { getUserMyPage, getUserActivity, getReportsByDate } from "../../api/mypage";
 
 const MyPage = () => {
-  
+  const userId = localStorage.getItem("userId");
+
   const [userData, setUserData] = useState(null);
   const [activityData, setActivityData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(dayjs().format("YYYY-MM-DD"));
   const [dailyReports, setDailyReports] = useState([]);
-  const userId = 1; // 로그인 후 교체
 
+  if (!userId) return <p>로그인 후 이용해주세요!</p>;
+
+  // 전체 데이터 로드
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [userRes, activityRes] = await Promise.all([
-          getUserMyPage(userId),
-          getUserActivity(userId),
+          getUserMyPage(Number(userId)),
+          getUserActivity(Number(userId)),
         ]);
+
         setUserData(userRes);
         setActivityData(activityRes);
-        setDailyReports(userRes.todayReports || []); // 기본은 오늘
+        setDailyReports(userRes.todayReports || []);
+
       } catch (err) {
         console.error("데이터 로딩 실패:", err);
       }
     };
+
     fetchData();
   }, []);
 
-  // ✅ 날짜 변경 시 리포트 불러오기
+  // 날짜 변경 시 리포트 다시 요청
   useEffect(() => {
-    if (!selectedDate) return;
+    if (!selectedDate || !userData) return;
 
     const fetchReports = async () => {
       try {
         const today = dayjs().format("YYYY-MM-DD");
 
         if (selectedDate === today) {
-          setDailyReports(userData?.todayReports || []);
+          setDailyReports(userData.todayReports || []);
         } else {
-          const reports = await getReportsByDate(userId, selectedDate);
+          const reports = await getReportsByDate(Number(userId), selectedDate);
           setDailyReports(reports);
         }
+
       } catch (err) {
-        console.error("❌ 날짜별 리포트 불러오기 실패:", err);
-        setDailyReports([]);
+        console.error("날짜별 리포트 실패:", err);
       }
     };
 
@@ -64,23 +71,20 @@ const MyPage = () => {
 
       <SectionRow>
         <ActivityCalendar
-          userId={userId}
+          userId={Number(userId)}
           onDateSelect={setSelectedDate}
           activityData={activityData}
         />
-        <DailySummary
-          selectedDate={selectedDate}
-          reports={dailyReports}
-        />
+        <DailySummary selectedDate={selectedDate} reports={dailyReports} />
       </SectionRow>
 
-      <RecentReports userId={userId} />
-
+      <RecentReports userId={Number(userId)} />
     </Wrapper>
   );
 };
 
 export default MyPage;
+
 
 // ---------- styled ---------- //
 const Wrapper = styled.div`
