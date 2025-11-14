@@ -13,13 +13,12 @@
     "@ramonak/react-progress-bar": "^5.4.0",
     "apexcharts": "^5.3.6",
     "axios": "^1.12.2",
+    "d3": "^7.9.0",
     "dayjs": "^1.11.19",
     "html2canvas": "^1.4.1",
     "igniteui-react": "^19.3.0",
     "igniteui-webcomponents": "^6.3.5",
     "jspdf": "^3.0.3",
-    "igniteui-react": "^19.3.0",
-    "igniteui-webcomponents": "^6.3.5",
     "lucide-react": "^0.552.0",
     "react": "^19.1.1",
     "react-apexcharts": "^1.8.0",
@@ -29,10 +28,12 @@
     "react-router-dom": "^7.9.4",
     "react-spinners": "^0.17.0",
     "recharts": "^3.3.0",
-    "styled-components": "^6.1.19"
+    "styled-components": "^6.1.19",
+    "svgr": "^1.10.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@types/d3": "^7.4.3",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^4.2.0",

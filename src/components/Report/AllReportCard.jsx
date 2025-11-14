@@ -52,32 +52,31 @@ const AllReportCard = ({learningtitle, onView}) => {
 export default AllReportCard;
 
 const LearningWrap = styled.div`
-    min-width: 861px;
-    min-height: 199px;
-    background: #fff;
-    padding: 24px 37px;
+  min-width: 44.84vw;          /* 861px */
+  min-height: 18.43vh;         /* 199px */
+  background: #fff;
+  padding: 2.22vh 1.93vw;      /* 24px 37px */
 
-    border-radius:20px;
-    border: 1px solid #EFF0F3;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 1.85vh;       /* 20px */
+  border: 1px solid #EFF0F3;
+  box-shadow: 0px 0.37vh 0.37vh rgba(0, 0, 0, 0.25);  /* 4px */
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.22vh;                 /* 24px */
 `;
 
 const LearningTitle = styled.div`
-    font-family: "Noto Sans", 500;
-    font-weight: 500;
-    font-size: 20px;
-    display: flex;
-    max-width: 697px;
-    display: block;
-    jistify-content: center;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
+  font-family: "Noto Sans", 500;
+  font-weight: 500;
+  font-size: 1.85vh;           /* 20px */
+  max-width: 36.3vw;           /* 697px */
+
+  display: block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 `;
 
 const Tooltip = styled.div`
@@ -88,8 +87,8 @@ const Tooltip = styled.div`
   z-index: 1000;
   pointer-events: none;          /* 툴팁 위에 마우스 가도 무시 */
 
-  font-size: 18px;
-  padding: 2px 4px;
+  font-size: 1.67vh;             /* 18px */
+  padding: 0.18vh 0.21vw;        /* 대충 2px 4px 정도 비율로 */
 
   opacity: 0;
   animation: fadeIn 0.08s ease-out forwards;
@@ -106,29 +105,28 @@ const Tooltip = styled.div`
   }
 `;
 
-
 const LearningCheck = styled.div`
-    background: #000;
-    color: #fff;
+  background: #000;
+  color: #fff;
 
-    width: 697px;
-    height: 39px;
-    padding: 15px 84px;
-    border-radius: 12px;
+  width: 36.3vw;              /* 697px */
+  height: 3.61vh;             /* 39px */
+  padding: 1.39vh 4.38vw;     /* 15px 84px */
+  border-radius: 1.11vh;      /* 12px */
 
-    font-family: "Noto Sans", SemiBold;
-    font-weight: 600;
-    font-size: 18px;
+  font-family: "Noto Sans", SemiBold;
+  font-weight: 600;
+  font-size: 1.67vh;          /* 18px */
 
-    display:flex;
-    align-items: center;
-    justify-content: center;
+  display:flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const StyledPadding = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 2.22vh;                /* 24px */
 `;
 
 const StyledTagSelect = styled(TagSelect)`
