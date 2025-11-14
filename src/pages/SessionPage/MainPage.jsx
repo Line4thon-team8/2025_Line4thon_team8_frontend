@@ -4,6 +4,7 @@ import Input from "../../components/Inputs/Input";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { analyzeChat } from "../../api/session";
+import mainBG from "../../assets/mainpage.svg";
 
   const MainPage = () => {
     const [chatLink, setChatLink] = useState("");
@@ -11,15 +12,15 @@ import { analyzeChat } from "../../api/session";
 
   const handleAnalyze = async () => {
     const userId = localStorage.getItem("userId");
-    if (!userId) return alert("로그인 후 이용해주세요!");
-    if (!chatLink) return alert("대화 링크를 입력해주세요!");
+    if (!userId) return alert("로그인 후 이용해주세요");
+    if (!chatLink) return alert("대화 링크를 입력해주세요");
 
     try {
-      // 1️⃣ 링크 분석 요청
+      // 1. 링크 분석 요청
       const { extract_id, content } = await analyzeChat(userId, chatLink);
       console.log("링크 분석 결과:", extract_id, content);
 
-      // 2️⃣ 토픽 리스트로 변환
+      // 2. 토픽 리스트로 변환
       const topics = content.split("\n").map((line) => {
         const [namePart, valuePart] = line.split("-");
         return {
@@ -28,7 +29,7 @@ import { analyzeChat } from "../../api/session";
         };
       });
 
-      // 3️⃣ 다음 페이지로 이동
+      // 3️. 다음 페이지로 이동
       navigate(`/select-topic?extractId=${extract_id}`, { state: { topics } });
     } catch (err) {
       console.error(err);
@@ -37,6 +38,8 @@ import { analyzeChat } from "../../api/session";
   };
 
   return (
+    <>
+    <BackgroundImage src={mainBG} alt="main-bg" />
     <Container>
       <Title>분석할 대화 링크를 붙여넣어주세요</Title>
       <Description>
@@ -55,6 +58,7 @@ import { analyzeChat } from "../../api/session";
         확인
       </Button>
     </Container>
+    </>
   );
 };
 
@@ -72,12 +76,23 @@ const Container = styled.div`
   height: 100vh;
 `;
 
+const BackgroundImage = styled.img`
+  position: absolute;
+  left: 0px;
+  top: 28%;
+  transform: translateX(100%);
+  width: 550px;
+  z-index: 0;
+  pointer-events: none;
+`;
+
 const Title = styled.h1`
   font-size: 2rem;
   margin-bottom: 1.2rem;
   text-align: center;
   line-height: 150%;
   letter-spacing: -0.64px;
+  z-index: 10;
 `;
 
 const Description = styled.p`
@@ -87,10 +102,12 @@ const Description = styled.p`
   color: #000000;
   text-align: center;
   line-height: 160%;
+  z-index: 10;
 `;
 
 const InputWrapper = styled.div`
   width: 100%;
   max-width: 420px;
   margin-bottom: 2rem;
+  z-index: 10;
 `;

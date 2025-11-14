@@ -21,10 +21,11 @@ export default function Router() {
 
       <Routes>
     
-        <Route path="/" element={<LandingPage />} />
+        
           <Route element={<Layout />}>
+            <Route path="/" element={<LandingPage />} />
             <Route path="/main" element={<MainPage />} />
-            <Route path="/session" element={<SelectTopicPage/>} />
+            <Route path="/select-topic" element={<SelectTopicPage/>} />
             <Route path="/progress" element={<Progress />} />
             <Route path="/summation" element={<Summation />} />
             <Route path="/report" element={<Report />} />
