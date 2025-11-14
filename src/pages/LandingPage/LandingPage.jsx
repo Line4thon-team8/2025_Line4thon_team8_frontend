@@ -48,6 +48,7 @@ export default LandingPage;
 
 const Container = styled.div`
   position: relative;   /* z-index 컨텍스트 생성 */
+
   display: flex;
   flex-direction: column;
   align-items: center;

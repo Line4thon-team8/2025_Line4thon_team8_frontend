@@ -19,7 +19,6 @@ const ProgBar = ({completed, width, height, progtext, progcheck}) =>{
                         progtext = {progtext}
                         progcheck = {progcheck}
                     />
-                    
                 </BarWrap>
             </ProgBarWrap>
             )
