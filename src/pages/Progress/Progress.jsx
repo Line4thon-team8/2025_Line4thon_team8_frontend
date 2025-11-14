@@ -52,9 +52,18 @@ const Progress = () => {
 
       onEvent: (type, data) => {
         if (type === "complete") {
-        navigate(`/summation?entranceId=${finalEntranceId}`);
+        const userId = localStorage.getItem("userId");
+
+        navigate(`/summation?entranceId=${finalEntranceId}`, {
+          state: {
+            entranceId: finalEntranceId,
+            userId: Number(userId),
+            topics,
+          },
+        });
         return;
       }
+
         console.log("🔥 SSE EVENT:", type, data);
 
         const { progress, step } = data;

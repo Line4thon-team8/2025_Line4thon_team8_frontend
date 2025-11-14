@@ -5,118 +5,104 @@ import TagSelect from "./TagSelect";
 const TopicReportCard = ({ learningtitle, onView }) => {
   const [showTip, setShowTip] = useState(false);
   const [tipPos, setTipPos] = useState({ x: 0, y: 0 });
+  const [selectedTag, setSelectedTag] = useState("POST");
 
   const fullText = `${learningtitle} 학습 리포트`;
 
-  const handleMouseEnter = () => {
-    setShowTip(true);
-  };
-
-  const handleMouseLeave = () => {
-    setShowTip(false);
-  };
-
-  const handleMouseMove = (e) => {
-    // 화면 기준(mouse pointer) 좌표 그대로 사용
-    const x = e.clientX + 8;   // 마우스 오른쪽 약간
-    const y = e.clientY - 60;   // 마우스 바로 위쪽 느낌
-
-    setTipPos({ x, y });
-  };
-
   return (
-    <LearningWrap>
-      <LearningTitle
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        onMouseMove={handleMouseMove}
+    <Card>
+      {/* 제목 */}
+      <Title
+        onMouseEnter={() => setShowTip(true)}
+        onMouseLeave={() => setShowTip(false)}
+        onMouseMove={(e) => setTipPos({ x: e.clientX + 8, y: e.clientY - 60 })}
       >
         {fullText}
-      </LearningTitle>
+      </Title>
 
-      {showTip && (
-        <Tooltip style={{ left: tipPos.x, top: tipPos.y }}>
-          {fullText}
-        </Tooltip>
-      )}
+      {/* Tooltip */}
+      {showTip && <Tooltip style={{ left: tipPos.x, top: tipPos.y }}>{fullText}</Tooltip>}
 
-      <TagSelect />
-      <LearningCheck as="button" onClick={() => onView?.(learningtitle)}>
-        보기
-      </LearningCheck>
-    </LearningWrap>
+      <TagSelectWrap>
+        <TagSelect onChange={(val) => setSelectedTag(val)} />
+      </TagSelectWrap>
+
+      <ViewBtn onClick={() => onView?.(learningtitle, selectedTag)}>보기</ViewBtn>
+    </Card>
   );
 };
 
 export default TopicReportCard;
 
-const LearningWrap = styled.div`
-  width: 15.41vw;
-  height: 18.43vh;
-  background: #fff;
-  padding: 2.22vh 1.93vw;
+/* ---------------- Styled ---------------- */
 
-  border-radius: 1.85vh;
+const Card = styled.div`
+  width: 18vw;
+  min-width: 240px;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 14px;
   border: 1px solid #EFF0F3;
-  box-shadow: 0px 0.37vh 0.37vh rgba(0, 0, 0, 0.25);
+  box-shadow: 0px 4px 4px rgba(0,0,0,0.15);
 
   display: flex;
   flex-direction: column;
-  gap: 2.22vh;
+  gap: 18px;
+
+  transition: 0.2s ease;
+  &:hover {
+    box-shadow: 0px 6px 10px rgba(0,0,0,0.2);
+  }
 `;
 
-const LearningTitle = styled.div`
-  font-family: "Noto Sans", 500;
-  font-weight: 500;
-  font-size: 1.85vh;          /* 20px → 20/1080 */
+const Title = styled.div`
+  font-family: "Noto Sans";
+  font-weight: 600;
+  font-size: 18px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
-  max-width: 100%;
-  display: block;
 `;
 
 const Tooltip = styled.div`
   position: fixed;
-  white-space: nowrap;
-  background: transparent;
-  color: #000;
-  z-index: 1000;
   pointer-events: none;
 
-  font-size: 1.66vh;          /* 18px → 18/1080 */
-  padding: 0.18vh 0.20vw;
+  padding: 5px 8px;
+  background: black;
+  color: white;
+  border-radius: 6px;
+  font-size: 14px;
 
+  z-index: 2000;
   opacity: 0;
-  animation: fadeIn 0.08s ease-out forwards;
+  animation: fadeIn 0.1s forwards;
 
   @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateX(-0.20vw);
-    }
     to {
       opacity: 1;
-      transform: translateX(0);
     }
   }
 `;
 
-const LearningCheck = styled.div`
+const TagSelectWrap = styled.div`
+  display: flex;
+`;
+
+const ViewBtn = styled.button`
   background: #000;
   color: #fff;
+  width: 100%;
+  padding: 12px 0;
+  border-radius: 10px;
 
-  width: 11.5vw;
-  height: 3.61vh;
-  padding: 1.38vh 4.37vw;
-  border-radius: 1.11vh;
-
-  font-family: "Noto Sans", SemiBold;
+  font-family: "Noto Sans";
+  font-size: 16px;
   font-weight: 600;
-  font-size: 1.66vh;
+  cursor: pointer;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  transition: 0.2s ease;
+  &:hover {
+    background: #444;
+  }
 `;

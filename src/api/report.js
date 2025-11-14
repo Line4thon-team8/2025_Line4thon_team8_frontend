@@ -1,70 +1,60 @@
 // src/api/report.js
 import api from "./axios";
 
-// 리포트 생성
-export const createReport = async ({
-  entranceId,
-  userId,
-  options = "TOPIC", // "TOTAL" 또는 "TOPIC"
-  tag,
-  tags,
-} = {}) => {
-  // 1) 공통 payload 기본값
-  const payload = {
-    // TODO: 나중에 실제 값으로 교체
-    entranceId: entranceId ?? 7,
-    userId: userId ?? 2,
-    options,
-  };
+/**
+ * 리포트 생성 API
+ * @param entranceId
+ * @param userId
+ * @param options "TOTAL" | "TOPIC"
+ * @param tags   ex: { "로그인 방법": "POST" }
+ * @param tag    TOTAL일 때 ex: "POST"
+ */
+export const createReport = async ({ 
+  entranceId, 
+  userId, 
+  options, 
+  tags, 
+  tag 
+}) => {
 
-  // 2) 옵션별로 body 채우기
+  const payload = { entranceId, userId, options };
+
+  // 🔥 TOTAL 리포트 → tag 1개
   if (options === "TOTAL") {
-    // 통합 리포트
-    payload.tag = tag ?? "POST";
-  } else {
-    // 주제별 리포트
-    payload.tags =
-      tags ??
-      {
-        "로그인 방법": "POST",
-        "소셜 계정 연동": "REVIEW",
-      };
+    payload.tag = tag;
   }
 
-  console.log("[createReport] 요청 payload:", payload);
+  // 🔥 TOPIC 리포트 → tags 객체
+  if (options === "TOPIC") {
+    payload.tags = tags;
+  }
+
+  console.log("[createReport] payload:", payload);
 
   const { data } = await api.post("/report", payload);
 
-  console.log("[createReport] 응답 data:", data);
-
-  // 기대 응답 예시:
+  console.log("[createReport] 응답:", data);
+  
+  // 백엔드 응답 예시:
   // {
-  //   reports: [
-  //     { reportId: 42, title: "...", results: [...] },
-  //     { reportId: 43, title: "...", results: [...] }
+  //   "reports": [
+  //     { "reportId": 110 }
   //   ]
   // }
   return data;
 };
 
+
 // 리포트 단건 조회 GET /report/{reportId}
-export const getReportById = async (reportId = 2) => {
+export const getReportById = async (reportId) => {
   const { data } = await api.get(`/report/${reportId}`);
   return data;
 };
 
 // 리포트 상세 조회 (entranceId + userId + topic 기준)
-export const getReportDetail = async ({
-  entranceId,
-  userId,
-  topic,
-} = {}) => {
+export const getReportDetail = async ({ entranceId, userId, topic }) => {
   const { data } = await api.get("/report/detail", {
-    params: {
-      entranceId: entranceId ?? 7,
-      userId: userId ?? 2,
-      topic: topic ?? "로그인 방법",
-    },
+    params: { entranceId, userId, topic },
   });
   console.log("백엔드 리포트 생성 응답(detail): ", data);
   return data;

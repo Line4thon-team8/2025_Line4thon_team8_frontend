@@ -9,11 +9,60 @@ import { getReportById, exportMarkdown, exportToNotion } from "../../api/report"
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
-
 const LearningReportPage = () => {
   // /report/:reportId
   const { reportId } = useParams();
   const location = useLocation();
+
+const renderContent = () => {
+  const result = report?.reports?.[0]?.results?.[0];
+
+  // 1) 결과가 아예 없으면
+  if (!result) return "내용이 없습니다.";
+
+  // 2) JSON 파싱 실패한 경우
+  if (result?.content?.error) {
+    return `<p style="color:#666;">⚠ 분석을 진행할 수 없었어요.</p>
+            <p>사유: ${result.content.error}</p>`;
+  }
+
+  let html = "";
+
+  // ⭐ 새로 알게 된 내용
+  const newItems = result.new_cc_content?.["새로알게된"];
+  if (newItems && Object.keys(newItems).length > 0) {
+    html += `<h2>✨ 새로 알게 된 내용</h2>`;
+    Object.values(newItems).forEach((item) => {
+      html += `<p>• ${item}</p>`;
+    });
+  }
+
+  // ⭐ 바로잡은 개념
+  const redirectItems = result.redirect_cc_content?.["바로잡은"];
+  if (redirectItems && Object.keys(redirectItems).length > 0) {
+    html += `<h2>🔄 바로잡은 개념</h2>`;
+    Object.values(redirectItems).forEach((obj) => {
+      html += `
+        <p><b>잘못된 이해:</b> ${obj.잘못된이해}</p>
+        <p><b>올바른 이해:</b> ${obj.올바른이해}</p>
+      `;
+    });
+  }
+
+  // ⭐ 참고 자료
+  const refs = result.reference?.["추천자료"];
+  if (refs && Object.keys(refs).length > 0) {
+    html += `<h2>📚 참고 자료</h2>`;
+    Object.values(refs).forEach((ref) => {
+      html += `<p>• <a href="${ref.링크}" target="_blank">${ref.제목}</a></p>`;
+    });
+  }
+
+  // 모든 섹션이 비어있으면
+  if (!html) return "내용이 없습니다.";
+
+  return html;
+};
 
   // 리포트 데이터
   const [report, setReport] = useState(null);
@@ -161,7 +210,7 @@ const LearningReportPage = () => {
         <hr />
         <LR_Contain>
           <LR_Detail>
-            <pre>{JSON.stringify(report, null, 2)}</pre>
+            <div dangerouslySetInnerHTML={{ __html: renderContent() }} />
           </LR_Detail>
         </LR_Contain>
       </LR_ContainWrap>
