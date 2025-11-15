@@ -15,7 +15,7 @@ const DailySummary = ({ selectedDate, reports = [] }) => {
       {reports.length > 0 ? (
         <ul>
           {reports.map((r) => (
-            <Item key={r.id}>📘 {r.title}</Item>
+            <Item key={r.id}>{r.title}</Item>
           ))}
         </ul>
       ) : (
@@ -33,6 +33,7 @@ const Card = styled.div`
   border-radius: 16px;
   padding: 24px;
   flex: 1;
+  padding-left: 70px;
 `;
 
 const Header = styled.div`
@@ -41,7 +42,7 @@ const Header = styled.div`
 `;
 
 const Item = styled.li`
-  background: #f8f9fa;
+  background: #ffffff;
   padding: 10px;
   border-radius: 8px;
   margin-top: 8px;
