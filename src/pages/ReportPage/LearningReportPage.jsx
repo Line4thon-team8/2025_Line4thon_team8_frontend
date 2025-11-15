@@ -9,11 +9,60 @@ import { getReportById, exportMarkdown, exportToNotion } from "../../api/report"
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
-
 const LearningReportPage = () => {
   // /report/:reportId
   const { reportId } = useParams();
   const location = useLocation();
+
+const renderContent = () => {
+  const content = report?.content;
+
+  // 1) content 자체가 없을 때
+  if (!content) return "내용이 없습니다.";
+
+  // 2) JSON 파싱 실패했을 때
+  if (content.error) {
+    return `
+      <p style="color:#666;">⚠ 분석을 진행할 수 없었어요.</p>
+      <p>사유: ${content.error}</p>
+    `;
+  }
+
+  // 3) 파싱 성공한 경우 (content 안에 구조가 있을 때)
+  let html = "";
+
+  // content.new
+  if (content.new && content.new.length > 0) {
+    html += `<h2>✨ 새로 알게 된 내용</h2>`;
+    content.new.forEach(item => {
+      html += `<p>• ${item}</p>`;
+    });
+  }
+
+  // content.fix
+  if (content.fix && content.fix.length > 0) {
+    html += `<h2>🔄 바로잡은 개념</h2>`;
+    content.fix.forEach(f => {
+      html += `
+        <p><b>잘못된 이해:</b> ${f.wrong}</p>
+        <p><b>올바른 이해:</b> ${f.correct}</p>
+      `;
+    });
+  }
+
+  // content.ref
+  if (content.ref && content.ref.length > 0) {
+    html += `<h2>📚 참고 자료</h2>`;
+    content.ref.forEach(ref => {
+      html += `<p>• <a href="${ref.url}" target="_blank">${ref.title}</a></p>`;
+    });
+  }
+
+  if (!html) return "내용이 없습니다.";
+
+  return html;
+};
+
 
   // 리포트 데이터
   const [report, setReport] = useState(null);
@@ -161,7 +210,7 @@ const LearningReportPage = () => {
         <hr />
         <LR_Contain>
           <LR_Detail>
-            <pre>{JSON.stringify(report, null, 2)}</pre>
+            <div dangerouslySetInnerHTML={{ __html: renderContent() }} />
           </LR_Detail>
         </LR_Contain>
       </LR_ContainWrap>

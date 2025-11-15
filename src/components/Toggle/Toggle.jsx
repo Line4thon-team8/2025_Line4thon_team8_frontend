@@ -1,122 +1,61 @@
-// Toggle.jsx
-import { useState, useCallback } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
-const Toggle = ({value, onChange}) => { //주제별 리포트 -> false, 통합리포트 -> true
-  const isControlled = typeof value === "boolean"; //부모가 제어
-  const [inner, setInner] = useState(false);
-  
-  const isOn = isControlled ? value : inner;
-
-  const setIsOn = useCallback(
-    (next)=> {
-      if(!isControlled) setInner(next);
-      onChange?.(next);
-    }, [isControlled, onChange]
-  );
-
-  const toggleHandler = useCallback(() => {
-    setIsOn((v) => !v);
-  }, [isOn, setIsOn]);
-
-  const onKeyDown = (e) => {
-    if(e.key === "Enter" || e.key === " "){
-      e.preventDefault();
-      toggleHandler();
-  }
-};
-
+const Toggle = ({ value, onChange }) => {
   return (
     <ToggleWrap>
-      <Switch
-        $on={isOn}
-        onClick={toggleHandler}
-        role="switch"
-        aria-checked={isOn}
-        tabIndex={0}
-        onKeyDown={onKeyDown}
-      >
-        <Track />
-
-        {/* 내부 텍스트 */}
-        <LabelIn $pos="left" $active={!isOn}>
+      <Inner>
+        <Pill $active={!value} onClick={() => onChange(false)}>
           주제별 리포트
-        </LabelIn>
-        <LabelIn $pos="right" $active={isOn}>
-          통합 리포트
-        </LabelIn>
+        </Pill>
 
-        <Knob $on={isOn} />
-      </Switch>
+        <Pill $active={value} onClick={() => onChange(true)}>
+          통합 리포트
+        </Pill>
+      </Inner>
     </ToggleWrap>
   );
 };
 
 export default Toggle;
 
+/* ---------------- styled-components ---------------- */
+
 const ToggleWrap = styled.div`
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
+
+  width: 332px;
+  height: 56px;
+
+  background: #ffffff;
+  border-radius: 100px;
+  padding: 4px;
+
+  box-sizing: border-box;
 `;
 
-const Switch = styled.button`
-  position: relative;
-  width: 17.29vw;   /* 332px */
-  height: 5.19vh;   /* 56px */
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  border-radius: 9.26vh; /* 100px */
+const Inner = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  border-radius: 100px;
+  overflow: hidden;
+`;
+
+const Pill = styled.button`
+  flex: 1;
+  border: none;
   outline: none;
-`;
+  cursor: pointer;
 
-const Track = styled.div`
-  position: absolute;
-  inset: 0;
-  border-radius: 9.26vh; /* 100px */
-  background-color: #fff;
-`;
+  border-radius: 100px;
 
-const Knob = styled.div`
-  position: absolute;
-  z-index: 1;
-  width: 8.39vw;    /* 161px */
-  height: 4.26vh;   /* 46px */
-  left: 0.26vw;     /* 5px */
-  bottom: 0.46vh;   /* 5px */
-  border-radius: 9.26vh; /* 100px */
-  background: rgba(0, 0, 0, 0.8);
-  transition: transform 0.6s;
-  transform: translateX(${(p) => (p.$on ? "8.33vw" : "0")});  /* 160px */
-`;
+  font-family: "Noto Sans", 700;
+  font-size: 16px;
 
-const LabelIn = styled.span`
-  position: absolute;
-  z-index: 2;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 50%;
-  text-align: center;
-  font-size: 1.48vh;    /* 16px */
-  font-weight: 700;
-  pointer-events: none;
+  transition: 0.28s ease;
 
-  ${(p) =>
-    p.$pos === "left"
-      ? css`
-          left: 0;
-        `
-      : css`
-          left: 50%;
-        `}
-
-  ${(p) =>
-    p.$active
-      ? css`
-          color: #ffffff; 
-        `
-      : css`
-          color: #868686;
-        `}
+  background: ${(p) => (p.$active ? "#000" : "transparent")};
+  color: ${(p) => (p.$active ? "#fff" : "#000")};
 `;

@@ -2,138 +2,115 @@ import styled from "styled-components";
 import { useState } from "react";
 import TagSelect from "./TagSelect";
 
-const AllReportCard = ({learningtitle, onView}) => {
-    const [showTip, setShowTip] = useState(false);
-    const [tipPos, setTipPos] = useState({ x: 0, y: 0 });
+const AllReportCard = ({ learningtitle, onView }) => {
+  const [showTip, setShowTip] = useState(false);
+  const [tipPos, setTipPos] = useState({ x: 0, y: 0 });
+  const [selectedTag, setSelectedTag] = useState("POST");
 
-    const fullText = `${learningtitle}`;
 
-    const handleMouseEnter = () => {
-        setShowTip(true);
-    };
+  const fullText = `${learningtitle}`;
 
-    const handleMouseLeave = () => {
-        setShowTip(false);
-    };
+  return (
+    <Card>
+      {/* 제목 */}
+      <Title
+        onMouseEnter={() => setShowTip(true)}
+        onMouseLeave={() => setShowTip(false)}
+        onMouseMove={(e) => setTipPos({ x: e.clientX + 8, y: e.clientY - 60 })}
+      >
+        {fullText}
+      </Title>
 
-    const handleMouseMove = (e) => {
-        // 화면 기준(mouse pointer) 좌표 그대로 사용
-        const x = e.clientX + 8;   // 마우스 오른쪽 약간
-        const y = e.clientY - 60;   // 마우스 바로 위쪽 느낌
+      {showTip && <Tooltip style={{ left: tipPos.x, top: tipPos.y }}>{fullText}</Tooltip>}
 
-        setTipPos({ x, y });
-    };
-    return(
-        <LearningWrap>
-            <LearningTitle
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-                onMouseMove={handleMouseMove}
-            >{fullText}</LearningTitle>
+      <Content>
+        <TagSelect className="tag" onChange={(val) => setSelectedTag(val)} />
 
-            {showTip && (
-                <Tooltip style={{ left: tipPos.x, top: tipPos.y }}>
-                {fullText}
-                </Tooltip>
-            )}
-
-            <StyledPadding>
-                <StyledTagSelect/>
-                <LearningCheck
-                    as="button"
-                    type="button"
-                    onClick={()=>onView?.(learningtitle)}
-                >보기</LearningCheck>
-            </StyledPadding>
-        </LearningWrap>
-    )
-}
+        <ViewBtn onClick={() => onView?.(selectedTag)}>보기</ViewBtn>
+      </Content>
+    </Card>
+  );
+};
 
 export default AllReportCard;
 
-const LearningWrap = styled.div`
-  min-width: 44.84vw;          /* 861px */
-  min-height: 18.43vh;         /* 199px */
-  background: #fff;
-  padding: 2.22vh 1.93vw;      /* 24px 37px */
+/* ---------------- Styled ---------------- */
 
-  border-radius: 1.85vh;       /* 20px */
+const Card = styled.div`
+  width: 46vw;
+  min-width: 520px;
+  background: #ffffff;
+
+  padding: 26px 32px;
+  border-radius: 16px;
   border: 1px solid #EFF0F3;
-  box-shadow: 0px 0.37vh 0.37vh rgba(0, 0, 0, 0.25);  /* 4px */
+  box-shadow: 0px 4px 4px rgba(0,0,0,0.15);
 
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 2.22vh;                 /* 24px */
+  gap: 24px;
+
+  transition: 0.2s ease;
+  &:hover {
+    box-shadow: 0px 6px 10px rgba(0,0,0,0.25);
+  }
 `;
 
-const LearningTitle = styled.div`
-  font-family: "Noto Sans", 500;
-  font-weight: 500;
-  font-size: 1.85vh;           /* 20px */
-  max-width: 36.3vw;           /* 697px */
+const Title = styled.div`
+  font-family: "Noto Sans";
+  font-size: 20px;
+  font-weight: 600;
 
-  display: block;
-  text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const Tooltip = styled.div`
-  position: fixed;               /* 화면(뷰포트) 기준 */
-  white-space: nowrap;
-  background: transparent;       /* 투명 배경 */
-  color: #000;
-  z-index: 1000;
-  pointer-events: none;          /* 툴팁 위에 마우스 가도 무시 */
+  position: fixed;
+  pointer-events: none;
 
-  font-size: 1.67vh;             /* 18px */
-  padding: 0.18vh 0.21vw;        /* 대충 2px 4px 정도 비율로 */
+  padding: 6px 9px;
+  background: black;
+  color: white;
+  border-radius: 6px;
+  font-size: 14px;
 
   opacity: 0;
-  animation: fadeIn 0.08s ease-out forwards;
+  animation: fadeIn 0.1s forwards;
+  z-index: 2000;
 
   @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateX(-4px);
-    }
     to {
       opacity: 1;
-      transform: translateX(0);
     }
   }
 `;
 
-const LearningCheck = styled.div`
+const Content = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  .tag {
+    width: fit-content;
+  }
+`;
+
+const ViewBtn = styled.button`
   background: #000;
   color: #fff;
 
-  width: 36.3vw;              /* 697px */
-  height: 3.61vh;             /* 39px */
-  padding: 1.39vh 4.38vw;     /* 15px 84px */
-  border-radius: 1.11vh;      /* 12px */
+  width: 100%;
+  padding: 14px 0;
+  border-radius: 12px;
 
-  font-family: "Noto Sans", SemiBold;
+  font-size: 17px;
   font-weight: 600;
-  font-size: 1.67vh;          /* 18px */
+  cursor: pointer;
 
-  display:flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const StyledPadding = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2.22vh;                /* 24px */
-`;
-
-const StyledTagSelect = styled(TagSelect)`
-    .ts-btn{
-        background: #D9F58A !important;
-    }   
-    .ts-item{ 
-        background: #D9F58A !important;
-    } 
+  transition: 0.2s ease;
+  &:hover {
+    background: #444;
+  }
 `;

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";  
 import styled, { css, StyleSheetManager } from "styled-components";
 
 import TopicBtn from "../../components/Buttons/TopicButton";
@@ -9,14 +9,23 @@ import { getResultSummary } from "../../api/result";
 
 const Summation = () => {
   const location = useLocation();
-  const { entranceId, userId } = location.state || {};
+  const navigate = useNavigate(); 
+  const mode = location.state?.mode || "전체통합";
 
-  const [selected, setSelected] = useState(null);
+  // entranceId / userId 가져오기
+  const queryEntranceId = new URLSearchParams(location.search).get("entranceId");
+  const entranceId =
+    location.state?.entranceId ||
+    queryEntranceId ||
+    localStorage.getItem("entranceId");
+
+  const userId = location.state?.userId || localStorage.getItem("userId");
+
+  // 상태
   const [summary, setSummary] = useState(null);
+  const [selected, setSelected] = useState(0);
 
-  const topics = ["React Hooks", "async/await", "에러 핸들링"];
-
-  // 🔥 요약 데이터 불러오기
+  // 🔥 요약 데이터 요청
   useEffect(() => {
     if (!entranceId || !userId) return;
 
@@ -26,13 +35,22 @@ const Summation = () => {
         console.log("🔥 요약 데이터:", data);
         setSummary(data);
       } catch (err) {
-        console.error("요약 조회 실패", err);
+        console.error("❌ 요약 조회 실패", err);
       }
     })();
   }, [entranceId, userId]);
 
-  const toConcept = (index) => {
-    const el = document.getElementById(`concept-${index}`);
+  // summary.results가 준비되면 topic 리스트 추출
+  const topics = summary ? Object.keys(summary.results) : [];
+
+  // 선택된 topic의 실제 데이터
+  const currentTopic =
+    summary && topics.length > 0
+      ? summary.results[topics[selected]]
+      : null;
+
+  const toConcept = () => {
+    const el = document.getElementById(`concept-0`);
     if (el) {
       const yOffset = -90;
       const y = el.getBoundingClientRect().top + window.scrollY + yOffset;
@@ -42,8 +60,24 @@ const Summation = () => {
 
   return (
     <SummationWrap>
+      <TopBar>
+      <ReportBtn
+        onClick={() =>
+          navigate("/report", {
+            state: {
+              entranceId,
+              userId,
+              topics, // <- 이게 핵심
+            },
+          })
+        }
+      >
+        학습 리포트 보기 
+      </ReportBtn>
+      </TopBar>
       <S_Title>전체 요약</S_Title>
       <S_SubTitle>클릭 시 해당 주제의 요약을 바로 볼 수 있어요</S_SubTitle>
+
 
       <S_TopicBtnWrap>
         <StyleSheetManager shouldForwardProp={(prop) => prop !== "active"}>
@@ -53,7 +87,7 @@ const Summation = () => {
               $active={selected === i}
               onClick={() => {
                 setSelected(i);
-                toConcept(i);
+                toConcept();
               }}
             >
               {topic}
@@ -64,21 +98,61 @@ const Summation = () => {
 
       <InsightTitle>주제별 학습 인사이트</InsightTitle>
       <InsightSub>버블이 오른쪽 위로 갈수록 더 익숙하지 않은 주제를 의미해요</InsightSub>
+
       <InsightWrap>
         <BubbleChart />
       </InsightWrap>
 
-      {/* 🔥 summary 내용은 여기서 Concept 컴포넌트로 내려 줄 예정 */}
+      {/* 🔥 선택된 topic의 실제 summary 데이터를 Concept로 전달 */}
       <S_ConceptWrap>
-        <Concept summary={summary} />
+        {mode === "전체통합"
+        ? topics.map((topic, i) => (
+            <Concept
+              key={i}
+              summary={{ topic, ...summary.results[topic] }}
+            />
+          ))
+        : currentTopic && (
+      <Concept
+        summary={{ topic: topics[selected], ...currentTopic }}
+      />
+    )
+}
+
       </S_ConceptWrap>
+
     </SummationWrap>
   );
 };
 
 export default Summation;
 
-/* 스타일 그대로 */
+
+/* ------- styled-components 동일 유지 ------- */
+
+const TopBar = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  margin-top: 60px;
+  margin-left: 130px;
+  margin-right: 130px;
+`;
+
+const ReportBtn = styled.button`
+  font-family: "Noto Sans", Medium;
+  font-size: 18px;
+  padding: 12px 24px;
+  background: #EDEDED;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+
+  &:hover {
+    background: #dcdcdc;
+  }
+`;
+
 const SummationWrap = styled.div`
   display: flex;
   flex-direction: column;
@@ -104,7 +178,9 @@ const S_SubTitle = styled.div`
 const S_TopicBtnWrap = styled.div`
   margin-top: 20px;
   margin-left: 512px;
+  width: 400px;
   display: flex;
+  justify-content: center;
   gap: 28px;
 `;
 
@@ -130,12 +206,12 @@ const StyledTopicBtn = styled(({ $active, ...rest }) => <TopicBtn {...rest} />)`
   ${({ $active }) =>
     $active &&
     css`
-      background-color: #226cff;
+      background-color: #000000;
       color: #ffffff;
-      border-color: #226cff;
+      border-color: #000000;
 
       &&:hover {
-        background-color: #226cff !important;
+        background-color: #a5a69f !important;
         color: #ffffff !important;
       }
     `}

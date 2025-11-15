@@ -31,19 +31,19 @@ const HeaderContainer = styled.header`
   top: 0;
   left: 10%;
   width: 80%;
-  height: 60px;
+  height: 70px;
   border-radius: 0 0 10px 10px;
   background: #D9F58A;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px;
+  padding: 0 20px;
   z-index: 1000;
 `;
 
 const Logo = styled.div`
   font-weight: 700;
-  font-size: 1.3rem;
+  font-size: 2rem;
   color: #000;
   cursor: pointer;
 `;

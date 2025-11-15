@@ -20,6 +20,14 @@ const StyledButton = styled.button`
   padding: 15px 64px;
   transition: all 0.2s ease;
   cursor: pointer;
+    &:disabled {
+    background-color: #cccccc !important;   /* 회색 배경 */
+    color: #777777 !important;              /* 흐린 글자색 */
+    cursor: not-allowed;                    /* 커서 변경 */
+    border: none !important;
+    box-shadow: none !important;
+    opacity: 0.7;                            /* 비활성화 느낌 */
+  }
 
   // primary button
   ${({ variant }) => variant === "primary" && css`
