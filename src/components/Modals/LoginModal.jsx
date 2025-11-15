@@ -21,7 +21,6 @@ const LoginModal = ({ onClose, onSignupClick }) => {
 
     try {
       const res = await loginUser(email, password);
-      alert(`로그인 성공 (사용자 ID: ${res.id})`);
       navigate("/main");
       setMessage("로그인 성공");
       onClose();
